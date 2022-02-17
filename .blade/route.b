@@ -1,4 +1,10 @@
-import .actions { * }
+import install
+import uninstall
+import build
+import upgrade
+import update
+import init
+import publish
 
 var map = {
   'install': install,

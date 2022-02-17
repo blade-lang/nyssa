@@ -1,4 +1,4 @@
-import .route { * }
+import ..route { * }
 
 def get_version() {
   return '0.1.0'
