@@ -1,2 +1,2 @@
 # nyssa
-A friendly package manager for the Blade programming language
+Nyssa is a friendly package manager for the Blade programming language.
