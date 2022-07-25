@@ -1,3 +1,11 @@
 #!/bin/bash
-cd `dirname $0`
-exec blade . "$@"
+
+if [[ ! $(command -v blade) ]]; then
+  echo "Blade is not installed or not in path."
+  exit 1
+fi
+
+NYSSA_DIR=`dirname $0`
+BLADE_EXE=`which blade`
+
+exec $BLADE_EXE $NYSSA_DIR "$@"
