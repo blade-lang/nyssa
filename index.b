@@ -1,3 +1,3 @@
-import .src.parser
+import .src.nyssa
 
-var parse_result = parser()
+nyssa()
