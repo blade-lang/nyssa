@@ -1,4 +1,7 @@
 import args
+import io
+import colors
+import os
 
 # import commands...
 import .commands.compile
@@ -37,6 +40,19 @@ for o in options {
   o.parse(parser)
 }
 
+def success(msg) {
+  io.stderr.write(colors.text(
+    colors.text('Success: ${msg}\n', colors.text_color.green),
+    colors.style.bold
+  ))
+  os.exit(0)
+}
+
+def error(msg) {
+  io.stderr.write(colors.text('error: ${msg}\n', colors.text_color.red))
+  os.exit(1)
+}
+
 def nyssa() {
   var opts = parser.parse()
 
@@ -45,7 +61,7 @@ def nyssa() {
     opts = opts.options
 
     if command {
-      commands[command.name].run(command.value, opts)
+      commands[command.name].run(command.value, opts, success, error)
     } else if opts {
       var key = opts.keys()[0]
       options[key].get(opts[key])
