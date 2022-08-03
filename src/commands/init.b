@@ -35,9 +35,10 @@ def run(value, options, success, error) {
       readme = here + os.path_separator + setup.README_FILE,
       config_file = here + os.path_separator + setup.CONFIG_FILE,
       attr_file = here + os.path_separator + '.gitattributes',
-      ignore_file = file(here + os.path_separator + '.gitignore', 'w+')
+      ignore_file = here + os.path_separator + '.gitignore'
 
-  if file(config_file).exists() {
+  var test_config_file = file(config_file)
+  if test_config_file.exists() and test_config_file.read().trim().length() > 0 {
     error('Cannot create new package where one exists.')
     return
   }
@@ -84,19 +85,31 @@ def run(value, options, success, error) {
 
   # increase Blade visibility by setting the attribute file properties
   # to allow Github identify it as a Blade project.
-  file(attr_file, 'w').write('*.b linguist-detectable\n' +
-        '*.b linguist-language=Blade\n')
+  var test_attr_file = file(attr_file)
+  var attr_content_test = '/\\*\\.b linguist\\-language=Blade/'
+  if !test_attr_file.exists() or !test_attr_file.read().match(attr_content_test) {
+    var start_line = test_attr_file.exists() ? '\n' : ''
+    file(attr_file, 'w+').write(
+      start_line +
+      '*.b linguist-detectable\n' +
+      '*.b linguist-language=Blade\n'
+    )
+  }
 
   # create default gitignore file to disable popular editor extensions
   # and the .blade directory.
   # 
   # this will only happen if the file does not exist or does not contain 
   # the blade default ignore definitions.
-  if !ignore_file.exists() or !ignore_file.contains(
-    '# blade packages directory and files'
+  var test_ingore_file = file(ignore_file)
+  var ignore_start_line = '# blade packages directory and files'
+  if !test_ingore_file.exists() or !test_ingore_file.read().match(
+    '/${ignore_start_line}/'
   ) {
-    ignore_file.write(
-      '# blade packages directory and files\n' +
+    var start_line = test_ingore_file.exists() ? '\n' : ''
+    file(ignore_file, 'w+').write(
+      start_line +
+      '${ignore_start_line}\n' +
       '.blade/\n' +
       '*.nyp\n' +   # nyssa package object file
       '\n' +
