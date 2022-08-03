@@ -5,19 +5,19 @@ def parse(parser) {
     'install', 
     'Installs a Blade package', 
     {
-      type: args.STRING
+      type: args.STRING,
     }
   ).add_option(
     'global', 
     'installs the package globally', 
     {
-      short_name: 'g'
+      short_name: 'g',
     }
   ).add_option(
     'local', 
     'runs the installation from a local repo', 
     {
-      short_name: 'l'
+      short_name: 'l',
     }
   )
 }

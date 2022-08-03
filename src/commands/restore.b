@@ -8,7 +8,7 @@ def parse(parser) {
     'sources', 
     'extra sources for packages', 
     {
-      short_name: 's'
+      short_name: 's',
     }
   )
 }

@@ -6,7 +6,7 @@ import colors
 import ..config {
   Config
 }
-import ..constants
+import ..setup
 import json
 
 def parse(parser) {
@@ -27,13 +27,15 @@ def run(value, options, success, error) {
 
   # Declare locations...
   var here = os.cwd(),
-      test_dir = os.join_paths(here, constants.TEST_DIR),
-      ex_dir = os.join_paths(here, constants.EXAMPLES_DIR)
+      test_dir = os.join_paths(here, setup.TEST_DIR),
+      ex_dir = os.join_paths(here, setup.EXAMPLES_DIR)
   var test_ignore = test_dir + os.path_separator + '.gitignore',
       ex_ignore = ex_dir + os.path_separator + '.gitignore',
-      index = here + os.path_separator + constants.INDEX_FILE,
-      readme = here + os.path_separator + constants.README_FILE,
-      config_file = here + os.path_separator + constants.CONFIG_FILE
+      index = here + os.path_separator + setup.INDEX_FILE,
+      readme = here + os.path_separator + setup.README_FILE,
+      config_file = here + os.path_separator + setup.CONFIG_FILE,
+      attr_file = here + os.path_separator + '.gitattributes',
+      ignore_file = file(here + os.path_separator + '.gitignore', 'w+')
 
   if file(config_file).exists() {
     error('Cannot create new package where one exists.')
@@ -66,18 +68,51 @@ def run(value, options, success, error) {
     file(readme, 'w').write(
       '# ${config.name}\n' + 
       '\n' +
-      '_Package information goes here..._\n' +
+      '${config.description or "_Package description goes here._"}_n' +
       '\n' +
       '### Package Information\n' + 
       '\n' + 
       '- **Name:** ${config.name}\n' +
       '- **Version:**: ${config.version}\n' +
-      '- **Description:**: ${config.description or "_Description goes here..._"}\n' +
-      '- **Homepage:**: ${config.homepage or "Homepage goes here..._"}\n' +
-      '- **Tags:**: ${", ".join(config.tags) or "Tags goes here..._"}\n' +
-      '- **Author:**: ${config.author or "Author info goes here..._"}\n' +
-      '- **License:**: ${config.license or "License name or link goes here..._"}\n' +
+      '- **Homepage:**: ${config.homepage or "_Homepage goes here._"}\n' +
+      '- **Tags:**: ${", ".join(config.tags) or "_Tags goes here._"}\n' +
+      '- **Author:**: ${config.author or "_Author info goes here._"}\n' +
+      '- **License:**: ${config.license or "_License name or link goes here._"}\n' +
       '\n'
+    )
+  }
+
+  # increase Blade visibility by setting the attribute file properties
+  # to allow Github identify it as a Blade project.
+  file(attr_file, 'w').write('*.b linguist-detectable\n' +
+        '*.b linguist-language=Blade\n')
+
+  # create default gitignore file to disable popular editor extensions
+  # and the .blade directory.
+  # 
+  # this will only happen if the file does not exist or does not contain 
+  # the blade default ignore definitions.
+  if !ignore_file.exists() or !ignore_file.contains(
+    '# blade packages directory and files'
+  ) {
+    ignore_file.write(
+      '# blade packages directory and files\n' +
+      '.blade/\n' +
+      '*.nyp\n' +   # nyssa package object file
+      '\n' +
+      '# popular editors\n' +
+      '.vscode/\n' +
+      '.idea/\n' +
+      '.vs/\n' +
+      '\n' +
+      '# c object files (for C extensions)\n' +
+      '*.o\n' +
+      '*.ko\n' +
+      '*.obj\n' +
+      '*.elf\n' +
+      '\n' +
+      '# log files\n' +
+      '*.log\n'
     )
   }
 

@@ -5,13 +5,13 @@ def parse(parser) {
     'uninstall', 
     'Uninstalls a Blade package', 
     {
-      type: args.STRING
+      type: args.STRING,
     }
   ).add_option(
     'global', 
     'package is a global package', 
     {
-      short_name: 'g'
+      short_name: 'g',
     }
   )
 }

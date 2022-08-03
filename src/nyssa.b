@@ -12,6 +12,8 @@ import .commands.test
 import .commands.uninstall
 import .commands.update
 import .commands.upgrade
+import .commands.publish
+import .commands.serve
 
 # Import options...
 import .options.version
@@ -22,7 +24,9 @@ var commands = {
   compile: compile,
   init: init,
   install: install,
+  publish: publish,
   restore: restore,
+  serve: serve,
   test: test,
   uninstall: uninstall,
   update: update,

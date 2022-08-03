@@ -1,4 +1,4 @@
-import ..constants
+import ..setup
 
 def parse(parser) {
   parser.add_option(
@@ -11,5 +11,5 @@ def parse(parser) {
 }
 
 def get(value) {
-  echo constants.NYSSA_VERSION
+  echo setup.NYSSA_VERSION
 }

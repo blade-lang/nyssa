@@ -8,6 +8,11 @@ class Config {
   var license
   var deps
 
+  # list of default sources
+  var sources = [
+    'github.com'
+  ]
+
   static from_dict(dict) {
     var c = Config()
 
@@ -32,6 +37,7 @@ class Config {
       tags: self.tags,
       author: self.author,
       license: self.license,
+      sources: self.sources,
       deps: self.deps,
     }.compact()
   }
