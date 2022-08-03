@@ -21,9 +21,8 @@ WSCRIPT "%tmpmsgbox%"
 EXIT /B 1
 
 :RUN
-cd /D %USERPROFILE%
 
-:: Remove the executable name and script path from the commands 
+:: @TODO: Remove the executable name and script path from the commands 
 :: passed to the running script.
 
 %BLADE_EXE% %NYSSA_DIR% %*
