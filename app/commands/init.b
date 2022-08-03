@@ -28,10 +28,12 @@ def run(value, options, success, error) {
   # Declare locations...
   var here = os.cwd(),
       test_dir = os.join_paths(here, setup.TEST_DIR),
-      ex_dir = os.join_paths(here, setup.EXAMPLES_DIR)
+      ex_dir = os.join_paths(here, setup.EXAMPLES_DIR),
+      app_dir = os.join_paths(here, setup.APP_DIR)
   var test_ignore = test_dir + os.path_separator + '.gitignore',
       ex_ignore = ex_dir + os.path_separator + '.gitignore',
       index = here + os.path_separator + setup.INDEX_FILE,
+      app_index = app_dir + os.path_separator + setup.INDEX_FILE,
       readme = here + os.path_separator + setup.README_FILE,
       config_file = here + os.path_separator + setup.CONFIG_FILE,
       attr_file = here + os.path_separator + '.gitattributes',
@@ -59,10 +61,6 @@ def run(value, options, success, error) {
   tf.open(); tf.close()
   var ef = file(ex_ignore, 'w+')
   ef.open(); ef.close()
-
-  # create the index file
-  var inf = file(index, 'w+')
-  inf.open(); inf.close()
 
   # Create the README.md file if one does not exists.
   if !file(readme).exists() {
@@ -131,6 +129,21 @@ def run(value, options, success, error) {
 
   # Create the nyssa.json file...
   file(config_file, 'w').write(json.encode(config, false))
+
+  if !os.dir_exists(app_dir)
+    os.create_dir(app_dir)
+
+  # create the app index file
+  var app_index_test_file = file(app_index)
+  if !app_index_test_file.exists() or !app_index_test_file.read().trim().length() == 0 {
+    file(app_index, 'w+').write("echo 'Welcome to Nyssa. Magic begins here!'")
+  }
+
+  # create the index file
+  var index_test_file = file(index)
+  if !index_test_file.exists() or index_test_file.read().trim().length() == 0 {
+    file(index, 'w+').write('import .app')
+  }
 
   success('Package created!')
 }

@@ -18,7 +18,7 @@ import .commands.serve
 # Import options...
 import .options.version
 
-var parser = args.Parser('nyssa')
+var parser = args.Parser('nyssa', true)
 
 var commands = {
   compile: compile,
@@ -57,18 +57,16 @@ def error(msg) {
   os.exit(1)
 }
 
-def nyssa() {
-  var opts = parser.parse()
+var opts = parser.parse()
 
-  if opts.options or opts.command {
-    var command = opts.command
-    opts = opts.options
+if opts.options or opts.command {
+  var command = opts.command
+  opts = opts.options
 
-    if command {
-      commands[command.name].run(command.value, opts, success, error)
-    } else if opts {
-      var key = opts.keys()[0]
-      options[key].get(opts[key])
-    }
+  if command {
+    commands[command.name].run(command.value, opts, success, error)
+  } else if opts {
+    var key = opts.keys()[0]
+    options[key].get(opts[key])
   }
 }

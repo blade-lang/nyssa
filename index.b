@@ -1,3 +1,1 @@
-import .src.nyssa
-
-nyssa()
+import .app

@@ -1,4 +1,5 @@
 var NYSSA_VERSION = '0.0.1'
+var APP_DIR = 'app'
 var TEST_DIR = 'tests'
 var EXAMPLES_DIR = 'examples'
 var INDEX_FILE = 'index.b'
