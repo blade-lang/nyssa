@@ -3,11 +3,12 @@ import os
 import io
 import iters
 import colors
+import json
 import ..config {
   Config
 }
 import ..setup
-import json
+import ..log
 
 def parse(parser) {
   parser.add_command(
@@ -51,35 +52,20 @@ def run(value, options, success, error) {
     error('Package must specify a name.')
   }
 
+  log.info('Initializing package ${config.name}...')
+  log.info('Creating directories...')
+
   # Create tests and examples directory
   if !os.dir_exists(test_dir) os.create_dir(test_dir)
   if !os.dir_exists(ex_dir) os.create_dir(ex_dir)
 
   # Create .gitignore files in tests and examples directory for 
   # git compartibility.
+  log.info('Creating required git files...')
   var tf = file(test_ignore, 'w+')
   tf.open(); tf.close()
   var ef = file(ex_ignore, 'w+')
   ef.open(); ef.close()
-
-  # Create the README.md file if one does not exists.
-  if !file(readme).exists() {
-    file(readme, 'w').write(
-      '# ${config.name}\n' + 
-      '\n' +
-      '${config.description or "_Package description goes here._"}_n' +
-      '\n' +
-      '### Package Information\n' + 
-      '\n' + 
-      '- **Name:** ${config.name}\n' +
-      '- **Version:**: ${config.version}\n' +
-      '- **Homepage:**: ${config.homepage or "_Homepage goes here._"}\n' +
-      '- **Tags:**: ${", ".join(config.tags) or "_Tags goes here._"}\n' +
-      '- **Author:**: ${config.author or "_Author info goes here._"}\n' +
-      '- **License:**: ${config.license or "_License name or link goes here._"}\n' +
-      '\n'
-    )
-  }
 
   # increase Blade visibility by setting the attribute file properties
   # to allow Github identify it as a Blade project.
@@ -104,6 +90,8 @@ def run(value, options, success, error) {
   if !test_ingore_file.exists() or !test_ingore_file.read().match(
     '/${ignore_start_line}/'
   ) {
+    log.info('Initializing Gitignore...')
+
     var start_line = test_ingore_file.exists() ? '\n' : ''
     file(ignore_file, 'w+').write(
       start_line +
@@ -127,21 +115,49 @@ def run(value, options, success, error) {
     )
   }
 
+  # Create the README.md file if one does not exists.
+  if !file(readme).exists() {
+    log.info('Generating README.md for project...')
+
+    file(readme, 'w').write(
+      '# ${config.name}\n' + 
+      '\n' +
+      '${config.description or "_Package description goes here._"}_n' +
+      '\n' +
+      '### Package Information\n' + 
+      '\n' + 
+      '- **Name:** ${config.name}\n' +
+      '- **Version:**: ${config.version}\n' +
+      '- **Homepage:**: ${config.homepage or "_Homepage goes here._"}\n' +
+      '- **Tags:**: ${", ".join(config.tags) or "_Tags goes here._"}\n' +
+      '- **Author:**: ${config.author or "_Author info goes here._"}\n' +
+      '- **License:**: ${config.license or "_License name or link goes here._"}\n' +
+      '\n'
+    )
+  } else {
+    log.info('Existing README.md. Skipping...')
+  }
+
   # Create the nyssa.json file...
+  log.info('Generating Nyssa config file...')
   file(config_file, 'w').write(json.encode(config, false))
 
-  if !os.dir_exists(app_dir)
+  if !os.dir_exists(app_dir) {
+    log.info('Creating application directory...')
     os.create_dir(app_dir)
+  }
 
   # create the app index file
   var app_index_test_file = file(app_index)
   if !app_index_test_file.exists() or !app_index_test_file.read().trim().length() == 0 {
+    log.info('Creating application files...')
     file(app_index, 'w+').write("echo 'Welcome to Nyssa. Magic begins here!'")
   }
 
   # create the index file
   var index_test_file = file(index)
   if !index_test_file.exists() or index_test_file.read().trim().length() == 0 {
+    log.info('Finalizing...')
     file(index, 'w+').write('import .app')
   }
 

@@ -1,16 +1,17 @@
 import http
-import .handler
+import .router
+import ..log
 
 def server(host, port) {
   
   var server = http.server(port, host)
-  server.on_receive(handler)
+  server.on_receive(router)
   server.on_error(|err, _| {
-    echo err.message
-    echo err.stacktrace
+    log.error('Error: ${err.message}\nTrace:\n${err.stacktrace}')
   })
 
   var host_name = host == '0.0.0.0' ? 'localhost' : host
-  echo 'Nyssa repository server started on http://${host_name}:${port}'
+  log.info('Nyssa repository server started.') 
+  log.info('Repository URL: http://${host_name}:${port}')
   server.listen()
 }
