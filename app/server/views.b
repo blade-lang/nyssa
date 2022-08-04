@@ -1,5 +1,8 @@
 import json
+import .template
 
 def home(req, res) {
-  res.write(req.params.id)
+  res.write(template('home', {
+    title: 'Nyssa'
+  }))
 }
