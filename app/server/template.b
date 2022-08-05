@@ -33,7 +33,8 @@ def template(name, variables) {
       if !key.match('/[a-zA-Z_][a-zA-Z0-9_]*/')
         die Exception('invalid variable passed to template')
 
-      content = content.replace('~\\{${key}\\}~', value)
+      content = content.replace('~((?<![{])[{])${key}\\}~', value).
+                        replace('~\\{\\{~', '{')
     }
 
     log.debug('Template "${name}" loaded.')
