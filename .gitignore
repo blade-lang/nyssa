@@ -17,7 +17,5 @@
 *.log
 
 # nyssa custom
-logs/
 *.DS_Store
-uploads/
-db/
+storage/

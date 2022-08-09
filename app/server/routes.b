@@ -2,6 +2,8 @@ import .views
 import .statics
 
 var routes = {
-  '/static/*': statics.handler,
-  '/': views.home,
+  '/static/*': ['GET', statics.handler],
+  '/': ['GET', views.home],
+  '/create-package': ['POST', views.create_package],
+  '/create-publisher': ['POST', views.create_publisher],
 }

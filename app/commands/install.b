@@ -19,6 +19,13 @@ def parse(parser) {
     {
       short_name: 'l',
     }
+  ).add_option(
+    'repo', 
+    'the repository to install from', 
+    {
+      short_name: 'r',
+      type: args.OPTIONAL
+    }
   )
 }
 

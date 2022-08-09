@@ -2,8 +2,7 @@ import os
 import ..setup
 import ..log
 
-var nyssa_dir = os.args[1]
-var templates_directory = os.join_paths(nyssa_dir, setup.TEMPLATES_DIR)
+var templates_directory = os.join_paths(os.args[1], setup.TEMPLATES_DIR)
 
 # create templates directory if missing.
 if !os.dir_exists(templates_directory) {

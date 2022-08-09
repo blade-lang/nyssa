@@ -1,13 +1,11 @@
 import io
 import date
 import os
+import .setup
 
-var nyssa_dir = os.args[1]
-var logs_dir = os.join_paths(nyssa_dir, 'logs')
-
-if !os.dir_exists(logs_dir) {
+var logs_dir = os.join_paths(os.args[1], setup.LOGS_DIR)
+if !os.dir_exists(logs_dir)
   os.create_dir(logs_dir)
-}
 
 var time = date.localtime()
 var _logfile = file(

@@ -1,6 +1,8 @@
 import ..log
 import .errors
 import .routes { routes }
+import json
+import http.status
 
 def _log_request(req, res) {
   log.info('RepositoryAccess: ${req.ip} - "${req.method} ${req.request_uri} ' +
@@ -35,15 +37,39 @@ def router(req, res) {
   try {
     var view = errors.not_found
 
+    # bind '.json()' to response
+    res.json = | v | {
+      res.headers['Content-Type'] = 'application/json'
+      res.write(json.encode(v))
+
+      # just for simplicity
+      return nil
+    }
+
+    # bind the '.fail()' to response
+    res.fail = | code, v | {
+      res.status = code
+      res.headers['Content-Type'] = 'application/json'
+      if !v v = status.map[code]
+      res.json({error: v})
+
+      # just for simplicity
+      return nil
+    }
+
     # Check exact matchs first...
     if routes.contains(req.path) {
-      view = routes[req.path]
+      var data = routes[req.path]
+      if data[0].upper() == req.method.upper()
+        view = data[1]
     } else {
-      for route, fn in routes {
+      for route, data in routes {
         var route_data = _get_uri_route_data(route, req.path)
         if route_data {
-          view = fn
-          req.params = route_data
+          if data[0].upper() == req.method.upper() {
+            view = data[1]
+            req.params = route_data
+          }
         }
       }
     }
