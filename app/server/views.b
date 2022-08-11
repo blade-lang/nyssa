@@ -109,3 +109,23 @@ def create_package(req, res) {
     return res.json(pkg)
   }
 }
+
+def get_package(req, res) {
+  /* Expected request format:
+  {
+    "name": string,
+    "version": string (optional)
+  } */
+  if !req.body or !is_dict(req.body)
+    return res.fail(status.BAD_REQUEST)
+}
+
+def login(req, res) {
+  /* Expected request format:
+  {
+    "name": string,
+    "key": string
+  } */
+  if !req.body or !is_dict(req.body)
+    return res.fail(status.BAD_REQUEST)
+}
