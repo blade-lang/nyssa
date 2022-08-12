@@ -16,7 +16,7 @@ def generate_publisher_key(name) {
   table.extend(name_bytes)
   name_bytes.dispose()
 
-  var h = hash.sha256(table)
+  var h = hash.sha1(table)
   table.dispose()
 
   return h

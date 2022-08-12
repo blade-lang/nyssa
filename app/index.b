@@ -14,6 +14,7 @@ import .commands.update
 import .commands.upgrade
 import .commands.publish
 import .commands.serve
+import .commands.account
 
 # Import options...
 import .options.version
@@ -21,6 +22,7 @@ import .options.version
 var parser = args.Parser('nyssa', true)
 
 var commands = {
+  account: account,
   compile: compile,
   init: init,
   install: install,

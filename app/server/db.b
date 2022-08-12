@@ -8,10 +8,8 @@ import ..setup
 var db_file = os.join_paths(os.args[1], setup.DATABASE_FILE)
 var db_dir = os.dir_name(db_file)
 
-if !os.dir_exists(db_dir) {
-  log.debug('Database directory missing. Creating...')
+if !os.dir_exists(db_dir)
   os.create_dir(db_dir)
-}
 
 var db = sqlite.open(db_file)
 
@@ -20,6 +18,8 @@ def create_tables() {
   db.exec('CREATE TABLE IF NOT EXISTS publishers (' +
       'id INTEGER PRIMARY KEY,' +
       'username TEXT NOT NULL,' +
+      'email TEXT NOT NULL,' +
+      'password TEXT NOT NULL,' +
       'key TEXT NOT NULL,' +
       'active BOOLEAN DEFAULT TRUE,' +
       'created_at DATETIME DEFAULT CURRENT_TIMESTAMP,' +
@@ -69,8 +69,13 @@ def get_publisher(name, key) {
   return nil
 }
 
-def create_publisher(name, key) {
-  if db.exec('INSERT INTO publishers (username, key) VALUES (?, ?);', [name, key])
+def create_publisher(publisher) {
+  if db.exec('INSERT INTO publishers (username, email, password, key) VALUES (?, ?, ?, ?);', [
+    publisher.name, 
+    publisher.email,
+    publisher.password,
+    publisher.key
+  ])
     return db.last_insert_id()
   return 0
 }

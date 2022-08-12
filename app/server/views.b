@@ -5,17 +5,18 @@ import .errors
 import ..setup
 import ..log
 import ..package
+import ..publisher
 import hash
 import json
+import bcrypt
 
 import os
 import http.status
 
 var uploads_dir = os.join_paths(os.args[1], setup.SOURCES_DIR)
-if !os.dir_exists(uploads_dir) {
-  log.debug('Package sources directory missing. Creating...')
+if !os.dir_exists(uploads_dir)
   os.create_dir(uploads_dir)
-}
+
 
 # FROTEND WEB
 def home(req, res) {
@@ -26,13 +27,19 @@ def home(req, res) {
 def create_publisher(req, res) {
   /* Expected request format:
     {
-      "name": string
+      "name": string,
+      "email": string,
+      "password": string
     } */
   if !req.body or !is_dict(req.body)
     return res.fail(status.BAD_REQUEST)
 
-  var name = req.body.get('name', nil)
-  if !name return res.fail(status.BAD_REQUEST)
+  var name = req.body.get('name', nil),
+      email = req.body.get('email', nil),
+      password = req.body.get('password', nil)
+
+  if !name or !email or !password
+    return res.fail(status.BAD_REQUEST)
 
   # ensure name is in a valid format
   # 1. publisher name can only contain alphanumeric and underscores
@@ -46,11 +53,13 @@ def create_publisher(req, res) {
 
   # generate key
   var key = util.generate_publisher_key(name)
+
   log.info('Creating publisher ${name}')
-  if db.create_publisher(name, key) == 0
+  var pub = publisher(name, email, bcrypt.hash(password, 5), key)
+  if db.create_publisher(pub) == 0
     return res.fail(status.SERVICE_UNAVAILABLE, 'something went wrong')
 
-  return res.json({key: key})
+  return res.json(pub)
 }
 
 def create_package(req, res) {

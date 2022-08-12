@@ -8,10 +8,8 @@ import ..log
 var static_files_directory = os.join_paths(os.args[1], setup.STATIC_DIR)
 
 # if static files directory does not exist, create it.
-if !os.dir_exists(static_files_directory) {
-  log.debug('Static files directory missing. Creating...')
+if !os.dir_exists(static_files_directory)
   os.create_dir(static_files_directory)
-}
 
 def handler(req, res) {
   var static_path = req.path.replace('/^\\/static\\//', '')

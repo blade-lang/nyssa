@@ -5,10 +5,8 @@ import ..log
 var templates_directory = os.join_paths(os.args[1], setup.TEMPLATES_DIR)
 
 # create templates directory if missing.
-if !os.dir_exists(templates_directory) {
-  log.debug('Templates directory missing. Creating...')
+if !os.dir_exists(templates_directory)
   os.create_dir(templates_directory)
-}
 
 def template(name, variables) {
   if !is_string(name)

@@ -24,7 +24,7 @@ class Package {
   static from_dict(dict) {
     var package = Package(dict.publisher, dict.name, dict.version, dict.source, dict.config, dict.get('created_at', date().format('c')))
     package.downloads = dict.get('downloads', 0)
-    package.active = dict.get('active', false)
+    package.active = dict.get('active', true)
     package.deleted_at = dict.get('deleted_at', nil)
     return package
   }
