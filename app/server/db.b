@@ -69,6 +69,13 @@ def get_publisher(name, key) {
   return nil
 }
 
+def check_publisher(name) {
+  var res = db.fetch('SELECT * FROM publishers WHERE username = ? OR email = ? ORDER BY id DESC LIMIT 1;', [name, name])
+
+  if res return res[0]
+  return nil
+}
+
 def create_publisher(publisher) {
   if db.exec('INSERT INTO publishers (username, email, password, key) VALUES (?, ?, ?, ?);', [
     publisher.name, 

@@ -2,8 +2,20 @@ import args
 import io
 import colors
 import os
+import .setup
+
+# initialize storage directory
+var storage_dir = os.join_paths(os.args[1], setup.STORAGE_DIR)
+if !os.dir_exists(storage_dir)
+  os.create_dir(storage_dir)
+
+# ensure config file exists...
+var config_file = os.join_paths(os.args[1], setup.CONFIG_FILE)
+if !file(config_file).exists()
+  file(config_file, 'w').write('{}')
 
 # import commands...
+import .commands.account
 import .commands.compile
 import .commands.init
 import .commands.install
@@ -14,7 +26,6 @@ import .commands.update
 import .commands.upgrade
 import .commands.publish
 import .commands.serve
-import .commands.account
 
 # Import options...
 import .options.version

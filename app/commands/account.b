@@ -1,5 +1,14 @@
 import args
+import io
+import os
+import http
+import json
 import ..setup
+
+# read the config file
+var config_file = os.join_paths(os.args[1], setup.CONFIG_FILE)
+var config = json.decode(file(config_file).read().trim() or '{}')
+if !is_dict(config) config = {}
 
 def parse(parser) {
   parser.add_command(
@@ -24,6 +33,105 @@ def parse(parser) {
   )
 }
 
+def create(repo, success, error) {
+  # warn about account overwrite
+  if config.get('name', nil) and config.get('key', nil) {
+    var name = config['name']
+    echo 'Account "${name}" currently logged in. If you continue, ${name} will be logged out.'
+    if !['y', 'Y'].contains(io.readline('Do you want to continue? [y/N]').trim())
+      return
+  }
+
+  var details = {
+    name: io.readline('username:').trim(),
+    email: io.readline('email:').trim(),
+    password: io.readline('password:', true).trim(),
+  }
+  echo '' # because password prompt won't go to a new line.
+
+  try {
+    var res = http.post('${repo}/create-publisher', details)
+    var body = json.decode(res.body.to_string())
+
+    if res.status == 200 {
+
+      # update the config
+      config['name'] = details.name
+      config['email'] = details.email
+      config['key'] = body.key
+      file(config_file, 'w').write(json.encode(config, false))
+
+      success(
+        'Account created successfully!\n' +
+        'Publisher Key: ${body.key}'
+      )
+    } else {
+      error('Account creation failed: ${body.error}')
+    }
+  } catch Exception e {
+    error('Account creation failed: ${e.message}')
+  }
+}
+
+def login(repo, success, error) {
+  # warn about account overwrite
+  if config.get('name', nil) and config.get('key', nil) {
+    var name = config['name']
+    echo 'Account "${name}" currently logged in. If you continue, ${name} will be logged out.'
+    if !['y', 'Y'].contains(io.readline('Do you want to continue? [y/N]').trim())
+      return
+  }
+
+  var details = {
+    username: io.readline('username:').trim(),
+    password: io.readline('password:', true).trim(),
+  }
+  echo '' # because password prompt won't go to a new line.
+
+  try {
+    var res = http.post('${repo}/login', details)
+    var body = json.decode(res.body.to_string())
+
+    if res.status == 200 {
+
+      # update the config
+      config['name'] = body.username
+      config['email'] = body.email
+      config['key'] = body.key
+      
+      file(config_file, 'w').write(json.encode(config, false))
+      success(
+        'Logged in as ${body.username} successfully!\n' +
+        'Publisher Key: ${body.key}'
+      )
+    } else {
+      error('Login failed: ${body.error}')
+    }
+  } catch Exception e {
+    error('Login failed: ${e.message}')
+  }
+}
+
+def logout(repo, success, error) {
+  if config.get('name', nil)
+    config.remove('name')
+  if config.get('key', nil)
+    config.remove('key')
+
+  try {
+    if file(config_file, 'w').write(json.encode(config, false))
+      success('Logged out of publisher account!')
+  } catch Exception e {
+    error('Login failed: ${e.message}')
+  }
+}
+
 def run(value, options, success, error) {
-  
+  var repo = options.get('repo', setup.DEFAULT_REPOSITORY)
+
+  using value {
+    when 'login' login(repo, success, error)
+    when 'create' create(repo, success, error)
+    when 'logout' logout(repo, success, error)
+  }
 }

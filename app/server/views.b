@@ -5,7 +5,7 @@ import .errors
 import ..setup
 import ..log
 import ..package
-import ..publisher
+import ..publisher { * }
 import hash
 import json
 import bcrypt
@@ -132,9 +132,27 @@ def get_package(req, res) {
 def login(req, res) {
   /* Expected request format:
   {
-    "name": string,
-    "key": string
+    "username": string,
+    "password": string
   } */
   if !req.body or !is_dict(req.body)
     return res.fail(status.BAD_REQUEST)
+
+  var name = req.body.get('username', nil),
+      password = req.body.get('password', nil)
+
+  if !name or !password
+    return res.fail(status.BAD_REQUEST)
+
+  var pub = db.get_publisher(name)
+
+  # authenticate
+  if !pub or !bcrypt.compare(password, pub.password)
+    return res.fail(status.FORBIDDEN)
+
+
+  # transform for return to remove the non-returning fields
+  pub = Publisher.from_dict(pub)
+
+  return res.json(pub)
 }
