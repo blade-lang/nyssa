@@ -14,6 +14,11 @@ var config_file = os.join_paths(os.args[1], setup.CONFIG_FILE)
 if !file(config_file).exists()
   file(config_file, 'w').write('{}')
 
+# ensure the state file exists
+var state_file = os.join_paths(os.args[1], setup.STATE_FILE)
+if !file(state_file).exists()
+  file(state_file, 'w').write('{}')
+
 # import commands...
 import .commands.account
 import .commands.init

@@ -87,7 +87,6 @@ def install(config, full_name, name, version, path, is_global, success, error) {
     var package_config = Config.from_dict(json.decode(file(package_config_file).read()))
 
     # run post install script if it exists
-    echo package_config.post_install
     if package_config.post_install {
       log.info('Running post install...')
 
@@ -190,7 +189,6 @@ def run(value, options, success, error) {
       echo bold('Author:') + body.author
       echo bold('License:') + body.license
       echo bold('Publisher:') + body.publisher
-
       echo ''
 
       if !silently {

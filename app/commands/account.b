@@ -6,10 +6,10 @@ import json
 import ..setup
 import ..log
 
-# read the config file
-var config_file = os.join_paths(os.args[1], setup.STATE_FILE)
-var config = json.decode(file(config_file).read().trim() or '{}')
-if !is_dict(config) config = {}
+# read the state file
+var state_file = os.join_paths(os.args[1], setup.STATE_FILE)
+var state = json.decode(file(state_file).read().trim() or '{}')
+if !is_dict(state) state = {}
 
 def parse(parser) {
   parser.add_command(
@@ -36,8 +36,8 @@ def parse(parser) {
 
 def create(repo, success, error) {
   # warn about account overwrite
-  if config.get('name', nil) and config.get('key', nil) {
-    var name = config['name']
+  if state.get('name', nil) and state.get('key', nil) {
+    var name = state['name']
     echo 'Account "${name}" currently logged in. If you continue, ${name} will be logged out.'
     if !['y', 'Y'].contains(io.readline('Do you want to continue? [y/N]').trim())
       return
@@ -57,11 +57,11 @@ def create(repo, success, error) {
 
     if res.status == 200 {
 
-      # update the config
-      config['name'] = details.name
-      config['email'] = details.email
-      config['key'] = body.key
-      file(config_file, 'w').write(json.encode(config, false))
+      # update the state
+      state['name'] = details.name
+      state['email'] = details.email
+      state['key'] = body.key
+      file(state_file, 'w').write(json.encode(state, false))
 
       success(
         'Account created successfully!\n' +
@@ -77,8 +77,8 @@ def create(repo, success, error) {
 
 def login(repo, success, error) {
   # warn about account overwrite
-  if config.get('name', nil) and config.get('key', nil) {
-    var name = config['name']
+  if state.get('name', nil) and state.get('key', nil) {
+    var name = state['name']
     echo 'Account "${name}" currently logged in. If you continue, ${name} will be logged out.'
     if !['y', 'Y'].contains(io.readline('Do you want to continue? [y/N]').trim())
       return
@@ -97,12 +97,12 @@ def login(repo, success, error) {
 
     if res.status == 200 {
 
-      # update the config
-      config['name'] = body.username
-      config['email'] = body.email
-      config['key'] = body.key
+      # update the state
+      state['name'] = body.username
+      state['email'] = body.email
+      state['key'] = body.key
       
-      file(config_file, 'w').write(json.encode(config, false))
+      file(state_file, 'w').write(json.encode(state, false))
       success(
         'Logged in as ${body.username} successfully!\n' +
         'Publisher Key: ${body.key}'
@@ -116,13 +116,13 @@ def login(repo, success, error) {
 }
 
 def logout(repo, success, error) {
-  if config.get('name', nil)
-    config.remove('name')
-  if config.get('key', nil)
-    config.remove('key')
+  if state.get('name', nil)
+    state.remove('name')
+  if state.get('key', nil)
+    state.remove('key')
 
   try {
-    if file(config_file, 'w').write(json.encode(config, false))
+    if file(state_file, 'w').write(json.encode(state, false))
       success('Logged out of publisher account!')
   } catch Exception e {
     error('Login failed: ${e.message}')

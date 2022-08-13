@@ -1,3 +1,8 @@
+import hash
+import json
+import bcrypt
+import os
+import http.status
 import .template
 import .db
 import .util
@@ -6,12 +11,6 @@ import ..setup
 import ..log
 import ..package
 import ..publisher
-import hash
-import json
-import bcrypt
-
-import os
-import http.status
 
 var uploads_dir = os.join_paths(os.args[1], setup.SOURCES_DIR)
 if !os.dir_exists(uploads_dir)
@@ -130,11 +129,26 @@ def get_package(req, res) {
   var pack = db.get_package(name, version)
   if !pack return res.fail(status.NOT_FOUND)
 
+  db.update_package_download_count(pack.name, pack.version)
+
   pack.tags = json.decode(pack.tags)
   pack.deps = json.decode(pack.deps)
   pack.remove('config')
 
   return res.json(pack)
+}
+
+def all_package(req, res) {
+  # fetch all the package
+  var packs = db.get_packages()
+
+  for pack in packs {
+    pack.tags = json.decode(pack.tags)
+    pack.deps = json.decode(pack.deps)
+    pack.remove('config')
+  }
+
+  return res.json(packs)
 }
 
 def login(req, res) {

@@ -1,8 +1,8 @@
-import ..log
-import .errors
-import .routes { routes }
 import json
 import http.status
+import .errors
+import .routes { routes }
+import ..log
 
 def _log_request(req, res) {
   log.info('RepositoryAccess: ${req.ip} - "${req.method} ${req.request_uri} ' +

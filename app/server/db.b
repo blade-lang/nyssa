@@ -1,7 +1,6 @@
 import sqlite
 import os
 import json
-
 import ..log
 import ..setup
 
@@ -94,7 +93,7 @@ def delete_publisher(name) {
 # PACKAGES
 
 def get_packages() {
-  return db.query('SELECT * FROM packages;')
+  return db.fetch('SELECT * FROM packages;')
 }
 
 def get_package(name, version) {
@@ -122,6 +121,10 @@ def create_package(package) {
 
 def delete_package(name) {
   return db.exec('DELETE FROM packages WHERE name = ?;', [name])
+}
+
+def update_package_download_count(name, version) {
+  return db.exec('UPDATE packages SET downloads = downloads + 1 WHERE name = ? and version = ?;', [name, version])
 }
 
 # create tables if not exists...
