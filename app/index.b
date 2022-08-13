@@ -16,14 +16,12 @@ if !file(config_file).exists()
 
 # import commands...
 import .commands.account
-import .commands.compile
 import .commands.init
 import .commands.install
 import .commands.restore
 import .commands.test
 import .commands.uninstall
 import .commands.update
-import .commands.upgrade
 import .commands.publish
 import .commands.serve
 
@@ -34,7 +32,6 @@ var parser = args.Parser('nyssa', true)
 
 var commands = {
   account: account,
-  compile: compile,
   init: init,
   install: install,
   publish: publish,
@@ -43,7 +40,6 @@ var commands = {
   test: test,
   uninstall: uninstall,
   update: update,
-  upgrade: upgrade,
 }
 
 var options = {

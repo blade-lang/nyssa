@@ -15,7 +15,7 @@ def _get_uri_route_data(route, path) {
   var name_pattern = '([a-zA-Z_][a-zA-Z0-9_]+)'
   var regex = route.
     # * in routes match anything or nothing after.
-    replace('/[*]/', '(.*?)').
+    replace('/[*]/', '(.*)').
     # + in routes match something after.
     replace('/[+]/', '(.+)').
     # convert {id} pattern to matching ids for path
@@ -24,9 +24,7 @@ def _get_uri_route_data(route, path) {
   var matches = path.matches('~^${regex}$~i')
   if matches {
     for k, v in matches {
-      if is_string(k) {
-        result[k] = v[0]
-      }
+      result[k] = v[0]
     }
   }
 

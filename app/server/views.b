@@ -5,7 +5,7 @@ import .errors
 import ..setup
 import ..log
 import ..package
-import ..publisher { * }
+import ..publisher
 import hash
 import json
 import bcrypt
@@ -120,13 +120,21 @@ def create_package(req, res) {
 }
 
 def get_package(req, res) {
-  /* Expected request format:
-  {
-    "name": string,
-    "version": string (optional)
-  } */
-  if !req.body or !is_dict(req.body)
-    return res.fail(status.BAD_REQUEST)
+  var r = req.params.get('name', '').split('@')
+  var name = r[0],
+      version = r.length() > 1 ? r[1] : nil
+
+  if !name return res.fail(status.BAD_REQUEST)
+
+  # fetch the package
+  var pack = db.get_package(name, version)
+  if !pack return res.fail(status.NOT_FOUND)
+
+  pack.tags = json.decode(pack.tags)
+  pack.deps = json.decode(pack.deps)
+  pack.remove('config')
+
+  return res.json(pack)
 }
 
 def login(req, res) {
@@ -152,7 +160,7 @@ def login(req, res) {
 
 
   # transform for return to remove the non-returning fields
-  pub = Publisher.from_dict(pub)
+  pub = publisher.Publisher.from_dict(pub)
 
   return res.json(pub)
 }

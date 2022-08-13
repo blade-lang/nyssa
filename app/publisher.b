@@ -38,10 +38,5 @@ class Publisher {
 }
 
 def publisher(username, email, password, key) {
-  return Publisher.from_dict({
-    username: username,
-    email: email,
-    password: password,
-    key: key,
-  })
+  return Publisher(username, email, password, key)
 }

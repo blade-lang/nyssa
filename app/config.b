@@ -3,10 +3,11 @@ class Config {
   var version
   var description
   var homepage
-  var tags
+  var tags = []
   var author
   var license
-  var deps
+  var deps = {}
+  var post_install
 
   # list of default sources
   var sources = [
@@ -24,6 +25,7 @@ class Config {
     c.author = dict.get('author', nil)
     c.license = dict.get('license', 'ISC')
     c.deps = dict.get('deps', {})
+    c.post_install = dict.get('post_install', nil)
 
     return c
   }
@@ -39,6 +41,7 @@ class Config {
       license: self.license,
       sources: self.sources,
       deps: self.deps,
+      post_install: self.post_install,
     }.compact()
   }
 }

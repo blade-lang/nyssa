@@ -78,7 +78,7 @@ def check_publisher(name) {
 
 def create_publisher(publisher) {
   if db.exec('INSERT INTO publishers (username, email, password, key) VALUES (?, ?, ?, ?);', [
-    publisher.name, 
+    publisher.username, 
     publisher.email,
     publisher.password,
     publisher.key

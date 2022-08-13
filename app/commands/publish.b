@@ -6,7 +6,7 @@ def parse(parser) {
     'Publishes a repository'
   ).add_option(
     'repo', 
-    'url to a private repository', 
+    'repository url', 
     {
       short_name: 'r',
       type: args.OPTIONAL,

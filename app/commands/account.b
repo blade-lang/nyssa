@@ -4,9 +4,10 @@ import os
 import http
 import json
 import ..setup
+import ..log
 
 # read the config file
-var config_file = os.join_paths(os.args[1], setup.CONFIG_FILE)
+var config_file = os.join_paths(os.args[1], setup.STATE_FILE)
 var config = json.decode(file(config_file).read().trim() or '{}')
 if !is_dict(config) config = {}
 
@@ -50,6 +51,7 @@ def create(repo, success, error) {
   echo '' # because password prompt won't go to a new line.
 
   try {
+    log.info('Creating new publisher account at ${repo}.')
     var res = http.post('${repo}/create-publisher', details)
     var body = json.decode(res.body.to_string())
 
@@ -89,6 +91,7 @@ def login(repo, success, error) {
   echo '' # because password prompt won't go to a new line.
 
   try {
+    log.info('Login in to publisher account at ${repo}.')
     var res = http.post('${repo}/login', details)
     var body = json.decode(res.body.to_string())
 
