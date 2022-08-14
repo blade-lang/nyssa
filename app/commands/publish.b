@@ -31,7 +31,8 @@ def parse(parser) {
 def run(value, options, success, error) {
   var repo = options.get('repo', setup.DEFAULT_REPOSITORY),
       state_file = os.join_paths(os.args[1], setup.STATE_FILE),
-      config_file = os.join_paths(os.cwd(), setup.CONFIG_FILE)
+      config_file = os.join_paths(os.cwd(), setup.CONFIG_FILE),
+      tmp_dest
 
   try {
     log.info('Checking for valid publisher account.')
@@ -48,7 +49,7 @@ def run(value, options, success, error) {
       error('Invalid Nyssa package.')
 
     var source_name = '${state.name}_${config.name}_${config.version}.nyp'
-    var tmp_dest = os.join_paths(storage_dir, source_name)
+    tmp_dest = os.join_paths(storage_dir, source_name)
 
     log.info('Packaging ${config.name}@${config.version}...')
     if zip.compress(os.cwd(), tmp_dest) {
@@ -87,5 +88,7 @@ def run(value, options, success, error) {
     }
   } catch Exception e {
     error(e.message)
+  } finally {
+    if tmp_dest file(tmp_dest).delete()
   }
 }

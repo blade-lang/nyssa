@@ -21,6 +21,7 @@ if !file(state_file).exists()
 
 # import commands...
 import .commands.account
+import .commands.clean
 import .commands.init
 import .commands.install
 import .commands.restore
@@ -37,6 +38,7 @@ var parser = args.Parser('nyssa', true)
 
 var commands = {
   account: account,
+  clean: clean,
   init: init,
   install: install,
   publish: publish,
