@@ -147,6 +147,11 @@ def run(value, options, success, error) {
       name = ns[0],
       version = ns.length() > 1 ? ns[1] : nil
 
+  var config_check = config.deps.get(name, nil)
+  if config_check
+    if version == nil or config_check == version
+      success('${value} is already installed.')
+
   if !no_cache log.info('Checking local cache.')
   var cache_id = hash.sha1(repo + name + version)
   var cache_path = os.join_paths(cache_dir, '${cache_id}.nyp')
