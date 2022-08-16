@@ -1,5 +1,5 @@
 # general
-var NYSSA_VERSION = '0.0.1'
+var NYSSA_VERSION = '0.1.0'
 
 # directories
 var APP_DIR = 'app'

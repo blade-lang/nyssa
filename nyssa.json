@@ -1,7 +1,7 @@
 {
   "name": "nyssa", 
   "version": "0.1.0", 
-  "description": "A package manager for the Blade programming language.", 
+  "description": "A package manager and repository for the Blade programming language.", 
   "homepage": "", 
   "tags": [
     "nyssa", 

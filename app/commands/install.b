@@ -61,9 +61,10 @@ def parse(parser) {
 }
 
 /**
+ * @DONE:
+ * - Support for running custom setup script on installation.
  * @TODO: 
  * - Add support for copying binary files to bin directory.
- * - Add support for running custom setup script on installation.
  */
 def install(config, full_name, name, version, path, is_global, success, error) {
   log.info('Installing ${full_name}.')

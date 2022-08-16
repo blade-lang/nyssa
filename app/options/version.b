@@ -1,3 +1,4 @@
+import os
 import ..setup
 
 def parse(parser) {
@@ -11,5 +12,6 @@ def parse(parser) {
 }
 
 def get(value) {
-  echo setup.NYSSA_VERSION
+  echo 'Nyssa ${setup.NYSSA_VERSION}'
+  echo os.exec('${os.args[0]} -v')
 }
