@@ -15,9 +15,9 @@ var _logfile = file(
 
 def _write(type, mes) {
   var time = date.localtime()
-  var message = '[${time.year}-${to_string(time.month).lpad(2,'0')}-${to_string(time.day).lpad(2,'0')} ' + 
+  var message = '${time.year}-${to_string(time.month).lpad(2,'0')}-${to_string(time.day).lpad(2,'0')} ' + 
                 '${to_string(time.hour).lpad(2,'0')}:${to_string(time.minute).lpad(2,'0')}:${to_string(time.seconds).lpad(2,'0')}' +
-                '.${to_string(time.microseconds).lpad(6,'0')}] ${type} ${mes}\n'
+                '.${to_string(time.microseconds).lpad(6,'0')} ${type} ${mes}\n'
   print(message)
   _logfile.write(message)
 }

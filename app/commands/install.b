@@ -69,11 +69,11 @@ def parse(parser) {
 def install(config, full_name, name, version, path, is_global, success, error) {
   log.info('Installing ${full_name}.')
 
-  var blade_root = os.args[0]
+  var blade_exe = os.args[0]
 
   var destination
   if !is_global destination = os.join_paths(os.cwd(), '.blade/libs/${name}')
-  else destination = os.join_paths(os.dir_name(blade_root), 'vendor/${name}')
+  else destination = os.join_paths(os.dir_name(blade_exe), 'vendor/${name}')
 
   # create the packages directory if not exists
   log.info('Creating package directory for ${full_name}.')
@@ -89,7 +89,7 @@ def install(config, full_name, name, version, path, is_global, success, error) {
 
     # run post install script if it exists
     if package_config.post_install {
-      log.info('Running post install...')
+      log.info('Running post install for ${full_name}...')
 
       # cd into the destination before running post_install so 
       # that post_install will run relative to the package.
@@ -97,7 +97,7 @@ def install(config, full_name, name, version, path, is_global, success, error) {
       os.change_dir(destination)
 
       # run the script
-      os.exec('${blade_root} ${package_config.post_install}')
+      os.exec('${blade_exe} ${package_config.post_install}')
 
       # return to current directory
       os.change_dir(this_dir)
@@ -109,14 +109,14 @@ def install(config, full_name, name, version, path, is_global, success, error) {
       if config.deps.contains(name) and version == nil {
         # do nothing...
       } else {
-        config.deps[name] = version
+        config.deps[name] = package_config.version
         file(config_file, 'w').write(json.encode(config, false))
       }
     } catch Exception e {
       echo colors.text(
         'Dependency state update failed!\n' + 
         'You can manually fix it by adding the following to the dependency section of you ' + setup.CONFIG_FILE + ' file.\n' +
-        '\t"${name}": ' + (version ? '"${version}"' : "null") +  '\n' +
+        '\n\t"${name}": ' + (version ? '"${version}"' : "null") +  '\n\n' +
         'If the section is not empty add a comma (,) and press ENTER before adding the fix.\n', 
         colors.text_color.orange
       )

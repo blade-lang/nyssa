@@ -8,6 +8,7 @@ class Config {
   var license
   var deps = {}
   var post_install
+  var pre_uninstall
 
   # list of default sources
   var sources = [
@@ -26,6 +27,7 @@ class Config {
     c.license = dict.get('license', 'ISC')
     c.deps = dict.get('deps', {})
     c.post_install = dict.get('post_install', nil)
+    c.pre_uninstall = dict.get('pre_uninstall', nil)
 
     return c
   }
@@ -42,6 +44,7 @@ class Config {
       sources: self.sources,
       deps: self.deps,
       post_install: self.post_install,
+      pre_uninstall: self.pre_uninstall,
     }.compact()
   }
 }
