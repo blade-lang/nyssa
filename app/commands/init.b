@@ -123,7 +123,7 @@ def run(value, options, success, error) {
     file(readme, 'w').write(
       '# ${config.name}\n' + 
       '\n' +
-      '${config.description or "_Package description goes here._"}_n' +
+      '${config.description or "_Package description goes here._"}\n' +
       '\n' +
       '### Package Information\n' + 
       '\n' + 

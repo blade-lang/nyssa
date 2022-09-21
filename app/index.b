@@ -26,7 +26,7 @@ import .commands.info
 import .commands.init
 import .commands.install
 import .commands.restore
-import .commands.test
+import .commands.doc
 import .commands.uninstall
 import .commands.update
 import .commands.publish
@@ -46,7 +46,7 @@ var commands = {
   publish: publish,
   restore: restore,
   serve: serve,
-  test: test,
+  doc: doc,
   uninstall: uninstall,
   update: update,
 }

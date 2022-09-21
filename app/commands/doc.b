@@ -2,8 +2,8 @@ import args
 
 def parse(parser) {
   parser.add_command(
-    'test', 
-    'Runs tests in the current project'
+    'doc', 
+    'Generates documentation for the current project'
   )
 }
 

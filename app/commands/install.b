@@ -66,7 +66,7 @@ def parse(parser) {
  * @TODO: 
  * - Add support for copying binary files to bin directory.
  */
-def install(config, full_name, name, version, path, is_global, success, error) {
+def install(repo, config, full_name, name, version, path, is_global, success, error) {
   log.info('Installing ${full_name}.')
 
   var blade_exe = os.args[0]
@@ -111,6 +111,11 @@ def install(config, full_name, name, version, path, is_global, success, error) {
       } else {
         config.deps[name] = package_config.version
         file(config_file, 'w').write(json.encode(config, false))
+      }
+
+      # update sources if not already listed
+      if !config.sources.contains(repo) {
+        config.sources.append(repo)
       }
     } catch Exception e {
       echo colors.text(
@@ -172,7 +177,7 @@ def run(value, options, success, error) {
       }
   
       if install_from_cache {
-        install(config, value, name, nil, cache_path, is_global, success, error)
+        install(repo, config, value, name, nil, cache_path, is_global, success, error)
         return
       }
     }
@@ -215,7 +220,7 @@ def run(value, options, success, error) {
         file(cache_path, 'wb').write(download_req.body)
 
         # do the real installation
-        install(config, value, name, body.version, cache_path, is_global, success, error)
+        install(repo, config, value, name, body.version, cache_path, is_global, success, error)
       } else {
         error('package source not found')
       }

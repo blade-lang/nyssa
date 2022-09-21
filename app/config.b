@@ -1,3 +1,5 @@
+import .setup
+
 class Config {
   var name
   var version
@@ -12,7 +14,7 @@ class Config {
 
   # list of default sources
   var sources = [
-    'github.com'
+    setup.DEFAULT_REPOSITORY
   ]
 
   static from_dict(dict) {

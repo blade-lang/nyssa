@@ -14,7 +14,7 @@ if !is_dict(state) state = {}
 def parse(parser) {
   parser.add_command(
     'account', 
-    'Manage a Nyssa publisher account',
+    'Manages a Nyssa publisher account',
     {
       type: args.CHOICE,
       # choices: ['create', 'login', 'logout'],
