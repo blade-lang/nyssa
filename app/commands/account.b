@@ -68,10 +68,10 @@ def create(repo, success, error) {
         'Publisher Key: ${body.key}'
       )
     } else {
-      error('Account creation failed: ${body.error}')
+      error('Account creation failed:\n  ${body.error}')
     }
   } catch Exception e {
-    error('Account creation failed: ${e.message}')
+    error('Account creation failed:\n  ${e.message}')
   }
 }
 
@@ -108,10 +108,10 @@ def login(repo, success, error) {
         'Publisher Key: ${body.key}'
       )
     } else {
-      error('Login failed: ${body.error}')
+      error('Login failed:\n  ${body.error}')
     }
   } catch Exception e {
-    error('Login failed: ${e.message}')
+    error('Login failed:\n  ${e.message}')
   }
 }
 
@@ -125,7 +125,7 @@ def logout(repo, success, error) {
     if file(state_file, 'w').write(json.encode(state, false))
       success('Logged out of publisher account!')
   } catch Exception e {
-    error('Login failed: ${e.message}')
+    error('Login failed:\n  ${e.message}')
   }
 }
 

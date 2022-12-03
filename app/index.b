@@ -3,6 +3,7 @@ import io
 import colors
 import os
 import .setup
+import .log
 
 # initialize storage directory
 var storage_dir = os.join_paths(os.args[1], setup.STORAGE_DIR)
@@ -64,14 +65,14 @@ for o in options {
 
 def success(msg) {
   io.stderr.write(colors.text(
-    colors.text('Success: ${msg}\n', colors.text_color.green),
+    colors.text(log.info(msg, true) + '\n', colors.text_color.green),
     colors.style.bold
   ))
   os.exit(0)
 }
 
 def error(msg) {
-  io.stderr.write(colors.text('error: ${msg}\n', colors.text_color.red))
+  io.stderr.write(colors.text(log.error(msg, true) + '\n', colors.text_color.red))
   os.exit(1)
 }
 

@@ -13,27 +13,28 @@ var _logfile = file(
   'w+'
 )
 
-def _write(type, mes) {
+def _write(type, mes, no_console) {
   var time = date.localtime()
   var message = '${time.year}-${to_string(time.month).lpad(2,'0')}-${to_string(time.day).lpad(2,'0')} ' + 
                 '${to_string(time.hour).lpad(2,'0')}:${to_string(time.minute).lpad(2,'0')}:${to_string(time.seconds).lpad(2,'0')}' +
                 '.${to_string(time.microseconds).lpad(6,'0')} ${type} ${mes}\n'
-  print(message)
+  if !no_console print(mes + '\n')
   _logfile.write(message)
+  return mes
 }
 
-def info(message) {
-  _write('INFO', message)
+def info(message, no_console) {
+  return _write('INFO', message, no_console)
 }
 
-def debug(message) {
-  _write('DEBUG', message)
+def debug(message, no_console) {
+  return _write('DEBUG', message, no_console)
 }
 
-def warn(message) {
-  _write('WARN', message)
+def warn(message, no_console) {
+  return _write('WARN', message, no_console)
 }
 
-def error(message) {
-  _write('ERROR', message)
+def error(message, no_console) {
+  return _write('ERROR', message, no_console)
 }

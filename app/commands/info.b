@@ -84,6 +84,6 @@ def run(value, options, success, error) {
       }
       echo ''
   } catch Exception e {
-    error('${value} installation failed: ${e.message}')
+    error('Failed to retrieve package information for ${value}:\n  ${e.message}')
   }
 }

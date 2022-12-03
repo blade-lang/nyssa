@@ -53,8 +53,8 @@ def run(value, options, success, error) {
     error('Package must specify a name.')
   }
 
-  log.info('Initializing package ${config.name}.')
-  log.info('Creating directories.')
+  log.info('Initializing package ${config.name}')
+  log.info('Creating directories')
 
   # Create tests and examples directory
   if !os.dir_exists(test_dir) os.create_dir(test_dir)
@@ -62,7 +62,7 @@ def run(value, options, success, error) {
 
   # Create .gitignore files in tests and examples directory for 
   # git compartibility.
-  log.info('Creating required git files.')
+  log.info('Creating required git files')
   var tf = file(test_ignore, 'w+')
   tf.open(); tf.close()
   var ef = file(ex_ignore, 'w+')
@@ -91,7 +91,7 @@ def run(value, options, success, error) {
   if !test_ingore_file.exists() or !test_ingore_file.read().match(
     '/${ignore_start_line}/'
   ) {
-    log.info('Initializing Gitignore.')
+    log.info('Initializing Gitignore')
 
     var start_line = test_ingore_file.exists() ? '\n' : ''
     file(ignore_file, 'w+').write(
@@ -118,7 +118,7 @@ def run(value, options, success, error) {
 
   # Create the README.md file if one does not exists.
   if !file(readme).exists() {
-    log.info('Generating README.md for project.')
+    log.info('Generating README.md for project')
 
     file(readme, 'w').write(
       '# ${config.name}\n' + 
@@ -136,33 +136,33 @@ def run(value, options, success, error) {
       '\n'
     )
   } else {
-    log.info('Existing README.md. Skipping.')
+    log.info('Existing README.md. Skipping')
   }
 
   # Create the nyssa.json file.
-  log.info('Generating Nyssa config file.')
+  log.info('Generating Nyssa config file')
   file(config_file, 'w').write(json.encode(config, false))
 
   if !os.dir_exists(app_dir) {
-    log.info('Creating application directory.')
+    log.info('Creating application directory')
     os.create_dir(app_dir)
   }
 
   # create the app index file
   var app_index_test_file = file(app_index)
   if !app_index_test_file.exists() or !app_index_test_file.read().trim().length() == 0 {
-    log.info('Creating application files.')
+    log.info('Creating application files')
     file(app_index, 'w+').write("echo 'Welcome to Nyssa. Magic begins here!'")
   }
 
   # create the index file
   var index_test_file = file(index)
   if !index_test_file.exists() or index_test_file.read().trim().length() == 0 {
-    log.info('Finalizing.')
+    log.info('Finalizing package initialization')
     file(index, 'w+').write('import .app')
   }
 
-  success('Package created!')
+  success('Package ${config.name} created!')
 }
 
 def _default(t) {

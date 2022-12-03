@@ -35,7 +35,7 @@ def run(value, options, success, error) {
       tmp_dest
 
   try {
-    log.info('Checking for valid publisher account.')
+    log.info('Checking for valid publisher account')
     var state = json.decode(file(state_file).read().trim()  or '{}')
     if !state.get('name', nil) or !state.get('key', nil)
       error(
@@ -43,7 +43,7 @@ def run(value, options, success, error) {
         'Run "nyssa account create" or "nyssa account login" to get started.'
       )
 
-    log.info('Checking for valid Nyssa package.')
+    log.info('Checking for valid Nyssa package')
     var config = Config.from_dict(json.decode(file(config_file).read()))
     if !config.name or !config.version
       error('Invalid Nyssa package.')
@@ -56,7 +56,7 @@ def run(value, options, success, error) {
       var client = http.HttpClient()
 
       # set authentication headers
-    log.info('Authenticating.')
+      log.info('Authenticating')
       client.headers = {
         'Nyssa-Publisher-Name': state.name,
         'Nyssa-Publisher-Key': state.key,
@@ -73,18 +73,18 @@ def run(value, options, success, error) {
       var body = json.decode(res.body.to_string())
 
       # delete the package source file
-      log.info('Removing temporary files.')
+      log.info('Removing temporary files')
       file(tmp_dest).delete()
 
       if res.status == 200 {
         success('Successfully published ${config.name}@${config.version}!')
       } else {
-        error('Publish failed for ${config.name}@${config.version}: ${body.error}')
+        error('Publish failed for ${config.name}@${config.version}:\n  ${body.error}')
       }
     } else {
 
       file(tmp_dest).delete()
-      error('Packaging failure.')
+      error('Packaging failure')
     }
   } catch Exception e {
     error(e.message)

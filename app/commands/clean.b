@@ -1,6 +1,7 @@
 import args
 import os
 import ..setup
+import ..log
 
 def parse(parser) {
   parser.add_command(
@@ -35,11 +36,11 @@ def run(value, options, success, error) {
   if !is_logs and !is_all and !is_cache is_all = true
 
   if is_logs or is_all {
-    echo 'Cleaning logs...'
+    log.info('Cleaning logs...')
     os.remove_dir(os.join_paths(os.args[1], setup.LOGS_DIR), true)
   }
   if is_cache or is_all {
-    echo 'Cleaning cache...'
+    log.info('Cleaning cache...')
     os.remove_dir(os.join_paths(os.args[1], setup.CACHE_DIR), true)
   }
 
