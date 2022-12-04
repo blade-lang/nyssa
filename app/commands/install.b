@@ -66,7 +66,7 @@ def parse(parser) {
  * @TODO: 
  * - Add support for copying binary files to bin directory.
  */
-def configure(config, repo, full_name, name, version, path, is_global, no_cache, count, error) {
+def configure(config, repo, full_name, name, version, path, is_global, no_cache, progress, error) {
   log.info('Installing ${full_name}')
 
   var blade_exe = os.args[0]
@@ -105,49 +105,24 @@ def configure(config, repo, full_name, name, version, path, is_global, no_cache,
 
     log.info('Updating dependency state for project')
 
-    try {
-      if count == 1 {
-        if config.deps.contains(name) and version == nil {
-          # do nothing...
-        } else {
-          config.deps[name] = package_config.version
-          file(config_file, 'w').write(json.encode(config, false))
-        }
+    if package_config.deps {
+      echo ''
+      log.info('Fetching dependencies for ${full_name}...')
+      echo '--------------------------${"-" * full_name.length()}---'
 
-        # update sources if not already listed
-        if !config.sources.contains(repo) {
-          config.sources.append(repo)
+      for dep, ver in package_config.deps {
+        var dep_full_name = ver ? '${dep}@${ver}' : dep
+        if !progress.contains(dep) or (ver != nil and progress[dep] != ver) {
+          install(config, repo, dep_full_name, dep, ver, is_global, no_cache, progress, error)
         }
       }
-
-      if package_config.deps {
-        echo ''
-        log.info('Fetching dependencies for ${full_name}...')
-        echo '--------------------------${"-" * full_name.length()}---'
-
-        for dep, ver in package_config.deps {
-          var dep_full_name = ver ? '${dep}@${ver}' : dep
-          install(config, repo, dep_full_name, dep, ver, is_global, no_cache, count, error)
-        }
-      }
-    } catch Exception e {
-      echo colors.text(
-        'Dependency state update failed!\n' + 
-        'You can manually fix it by adding the following to the dependency section of you ' + setup.CONFIG_FILE + ' file.\n' +
-        '\n\t"${name}": ' + (version ? '"${version}"' : "null") +  '\n\n' +
-        'If the section is not empty add a comma (,) and press ENTER before adding the fix.\n', 
-        colors.text_color.orange
-      )
-      error(e.message)
     }
   } else {
     error('${name} installation failed:\n  Failed to extract package source')
   }
 }
 
-def install(config, repo, full_name, name, version, is_global, no_cache, count, error) {
-  # increment number of installed packages.
-  count++
+def install(config, repo, full_name, name, version, is_global, no_cache, progress, error) {
 
   if !no_cache log.info('Checking local cache for ${name}@${version}')
   var cache_id = hash.sha1(repo + name + version)
@@ -157,17 +132,17 @@ def install(config, repo, full_name, name, version, is_global, no_cache, count, 
 
     # check local cache first to avoid redownloading all the time...
     if file(cache_path).exists() and !no_cache {
-      configure(config, repo, full_name, name, nil, cache_path, is_global, no_cache, count, error)
+      configure(config, repo, full_name, name, nil, cache_path, is_global, no_cache, progress, error)
       return
     }
 
     # fresh install
-    log.info('-> Fetching package metadata for ${full_name}')
+    log.info('>>> Fetching package metadata for ${full_name}')
     var res = http.get('${repo}/get-package/${full_name}')
     var body = json.decode(res.body.to_string())
 
     if res.status == 200 {
-      if count == 1 {
+      if !progress {
         echo ''
         echo green(bold('PACKAGE FOUND'))
         echo green('-------------')
@@ -184,7 +159,7 @@ def install(config, repo, full_name, name, version, is_global, no_cache, count, 
       }
 
       # download source
-      log.info('Downloading package source for ${full_name}')
+      log.info('Downloading package source for ${full_name}...')
       var download_url = repo + '/source/' + body.source
       var download_req = http.get(download_url)
       if download_req.status == 200 {
@@ -192,8 +167,11 @@ def install(config, repo, full_name, name, version, is_global, no_cache, count, 
         log.info('Caching download for ${full_name}')
         file(cache_path, 'wb').write(download_req.body)
 
+        # add to list of installed packages
+        progress.set(body.name, body.version)
+
         # do the real installation
-        configure(config, repo, full_name, name, body.version, cache_path, is_global, no_cache, count, error)
+        configure(config, repo, full_name, body.name, body.version, cache_path, is_global, no_cache, progress, error)
       } else {
         error('package source not found')
       }
@@ -209,7 +187,7 @@ def run(value, options, success, error) {
   var repo = options.get('repo', setup.DEFAULT_REPOSITORY),
       is_global = options.get('global', false),
       no_cache = options.get('no-cache', false),
-      count = 0
+      progress = {}
 
   if !file(config_file).exists() 
     error('Not in a Nyssa project')
@@ -230,6 +208,35 @@ def run(value, options, success, error) {
     if version == nil or config_check == version
       success('${value} is already installed.')
 
-  install(config, repo, full_name, name, version, is_global, no_cache, count, error)
+  install(config, repo, full_name, name, version, is_global, no_cache, progress, error)
+
+  try {
+    if progress.length() >= 1 {
+      version = progress[name]
+
+      if config.deps.contains(name) and version == nil {
+        # do nothing...
+      } else {
+        config.deps[name] = version
+      }
+
+      # update sources if not already listed
+      if !config.sources.contains(repo) {
+        config.sources.append(repo)
+      }
+
+      file(config_file, 'w').write(json.encode(config, false))
+    }
+  } catch Exception e {
+    echo colors.text(
+      'Dependency state update failed!\n' + 
+      'You can manually fix it by adding the following to the dependency section of you ' + setup.CONFIG_FILE + ' file.\n' +
+      '\n\t"${name}": ' + (version ? '"${version}"' : "null") +  '\n\n' +
+      'If the section is not empty add a comma (,) and press ENTER before adding the fix.\n', 
+      colors.text_color.orange
+    )
+    error(e.message)
+  }
+
   success('${full_name} installed successfully!')
 }
