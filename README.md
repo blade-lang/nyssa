@@ -4,13 +4,13 @@ Nyssa is a friendly package manager and repository for the Blade programming lan
 
 ## Features
 
-[x] Create packages.
-[x] Manage application dependencies (Install, Uinstall, Update and Restore).
-[x] Built-in hostable repository server.
-[x] Publish package to public and private repositories.
-[x] Manage publisher accounts.
-[x] Custom post-installation script support.
-[ ] Generate application/library documentation.
+- [x] Create packages.
+- [x] Manage application dependencies (Install, Uinstall, Update and Restore).
+- [x] Built-in hostable repository server.
+- [x] Publish package to public and private repositories.
+- [x] Manage publisher accounts.
+- [x] Custom post-installation script support.
+- [ ] Generate application/library documentation.
 
 
 ## Installation
