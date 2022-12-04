@@ -10,10 +10,15 @@ Nyssa is a friendly package manager and repository for the Blade programming lan
   - [x] Uninstall package
   - [x] Update (Install without specifying a version)
   - [x] Restore package
+  - [x] Publish package
 - [x] Built-in hostable repository server.
 - [x] Publish package to public and private repositories.
 - [x] Manage publisher accounts.
-- [x] Custom post-installation script support.
+  - [x] Create publisher account
+  - [x] Login to publisher account
+  - [x] Logout from publisher account
+- [x] Custom Post-Installation script support.
+- [x] Custom Pre-Uninstallation script support.
 - [ ] Generate application/library documentation.
 
 
