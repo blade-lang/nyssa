@@ -39,16 +39,10 @@ def parse(parser) {
       short_name: 'g',
     }
   ).add_option(
-    'silent', 
-    'runs the installation without confirmation', 
+    'use-cache', 
+    'enables the cache', 
     {
-      short_name: 's',
-    }
-  ).add_option(
-    'no-cache', 
-    'disables the cache', 
-    {
-      short_name: 'x',
+      short_name: 'c',
     }
   ).add_option(
     'repo', 
@@ -66,7 +60,7 @@ def parse(parser) {
  * @TODO: 
  * - Add support for copying binary files to bin directory.
  */
-def configure(config, repo, full_name, name, version, path, is_global, no_cache, progress, error) {
+def configure(config, repo, full_name, name, version, path, is_global, with_cache, progress, error) {
   log.info('Installing ${full_name}')
 
   var blade_exe = os.args[0]
@@ -84,6 +78,10 @@ def configure(config, repo, full_name, name, version, path, is_global, no_cache,
   # extract
   log.info('Extracting artefact for ${full_name}')
   if zip.extract(path, destination) {
+
+    # add to list of installed packages
+    progress.set(name, version)
+
     var package_config_file = os.join_paths(destination, setup.CONFIG_FILE)
     var package_config = Config.from_dict(json.decode(file(package_config_file).read()))
 
@@ -103,8 +101,6 @@ def configure(config, repo, full_name, name, version, path, is_global, no_cache,
       os.change_dir(this_dir)
     }
 
-    log.info('Updating dependency state for project')
-
     if package_config.deps {
       echo ''
       log.info('Fetching dependencies for ${full_name}...')
@@ -112,8 +108,8 @@ def configure(config, repo, full_name, name, version, path, is_global, no_cache,
 
       for dep, ver in package_config.deps {
         var dep_full_name = ver ? '${dep}@${ver}' : dep
-        if !progress.contains(dep) or (ver != nil and progress[dep] != ver) {
-          install(config, repo, dep_full_name, dep, ver, is_global, no_cache, progress, error)
+        if !progress.contains(dep) {
+          install(config, repo, dep_full_name, dep, ver, is_global, with_cache, progress, error)
         }
       }
     }
@@ -122,17 +118,17 @@ def configure(config, repo, full_name, name, version, path, is_global, no_cache,
   }
 }
 
-def install(config, repo, full_name, name, version, is_global, no_cache, progress, error) {
+def install(config, repo, full_name, name, version, is_global, with_cache, progress, error) {
 
-  if !no_cache log.info('Checking local cache for ${name}@${version}')
+  if with_cache log.info('Checking local cache for ${full_name}')
   var cache_id = hash.sha1(repo + name + version)
   var cache_path = os.join_paths(cache_dir, '${cache_id}.nyp')
 
   try {
 
     # check local cache first to avoid redownloading all the time...
-    if file(cache_path).exists() and !no_cache {
-      configure(config, repo, full_name, name, nil, cache_path, is_global, no_cache, progress, error)
+    if file(cache_path).exists() and with_cache {
+      configure(config, repo, full_name, name, nil, cache_path, is_global, with_cache, progress, error)
       return
     }
 
@@ -167,11 +163,8 @@ def install(config, repo, full_name, name, version, is_global, no_cache, progres
         log.info('Caching download for ${full_name}')
         file(cache_path, 'wb').write(download_req.body)
 
-        # add to list of installed packages
-        progress.set(body.name, body.version)
-
-        # do the real installation
-        configure(config, repo, full_name, body.name, body.version, cache_path, is_global, no_cache, progress, error)
+        # do package configuration
+        configure(config, repo, full_name, body.name, body.version, cache_path, is_global, with_cache, progress, error)
       } else {
         error('package source not found')
       }
@@ -186,7 +179,7 @@ def install(config, repo, full_name, name, version, is_global, no_cache, progres
 def run(value, options, success, error) {
   var repo = options.get('repo', setup.DEFAULT_REPOSITORY),
       is_global = options.get('global', false),
-      no_cache = options.get('no-cache', false),
+      with_cache = options.get('use-cache', false),
       progress = {}
 
   if !file(config_file).exists() 
@@ -208,10 +201,12 @@ def run(value, options, success, error) {
     if version == nil or config_check == version
       success('${value} is already installed.')
 
-  install(config, repo, full_name, name, version, is_global, no_cache, progress, error)
+  install(config, repo, full_name, name, version, is_global, with_cache, progress, error)
 
   try {
     if progress.length() >= 1 {
+      log.info('Updating dependency state for project')
+
       version = progress[name]
 
       if config.deps.contains(name) and version == nil {
