@@ -27,9 +27,9 @@ import .commands.info
 import .commands.init
 import .commands.install
 import .commands.restore
-import .commands.doc
+# import .commands.doc
 import .commands.uninstall
-import .commands.update
+# import .commands.update
 import .commands.publish
 import .commands.serve
 
@@ -41,15 +41,15 @@ var parser = args.Parser('nyssa', true)
 var commands = {
   account: account,
   clean: clean,
+  # doc: doc,
   info: info,
   init: init,
   install: install,
   publish: publish,
   restore: restore,
   serve: serve,
-  doc: doc,
   uninstall: uninstall,
-  update: update,
+  # update: update,
 }
 
 var options = {
