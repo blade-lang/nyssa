@@ -13,6 +13,8 @@ Nyssa is a friendly package manager and repository for the Blade programming lan
   - [x] Publish package
 - [x] Built-in hostable repository server.
 - [x] Publish package to public and private repositories.
+- [x] Nyssa repository server public API.
+- [ ] Nyssa repository server searchable frontend website.
 - [x] Manage publisher accounts.
   - [x] Create publisher account
   - [x] Login to publisher account

@@ -1,6 +1,7 @@
 import sqlite
 import os
 import json
+import math
 import ..log
 import ..setup
 
@@ -90,10 +91,21 @@ def delete_publisher(name) {
   return db.exec('DELETE FROM publishers WHERE username = ?;', [name])
 }
 
+def get_publishers_count() {
+  var res = db.fetch('SELECT COUNT(*) as count FROM publishers;')
+  if res return res[0].count
+  return 0
+}
+
 # PACKAGES
 
 def get_packages() {
   return db.fetch('SELECT * FROM packages;')
+}
+
+def get_top_packages(order) {
+  if !order order = 'downloads'
+  return db.fetch("SELECT name, publisher, description, replace(created_at, '-', '/') as date_created FROM packages GROUP BY name ORDER BY ${order} LIMIT 4;")
 }
 
 def get_package(name, version) {
@@ -106,6 +118,21 @@ def get_package(name, version) {
 
   if res return res[0]
   return nil
+}
+
+def search_package(query, page) {
+  if !page page = 1
+  var per_page = setup.PACKAGES_PER_PAGE or 10
+
+  var lower_limit = (page - 1) * per_page # 10 per page
+
+  var count = db.fetch('SELECT count(*) as count FROM packages WHERE name LIKE :query OR description LIKE :query OR author LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC;', {':query': query})[0].count
+
+  return {
+    total: count,
+    pages: math.ceil(count / per_page),
+    packages: db.fetch('SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR author LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC LIMIT ${lower_limit}, ${per_page};', {':query': query}),
+  }
 }
 
 def create_package(package) {
@@ -125,6 +152,18 @@ def delete_package(name) {
 
 def update_package_download_count(name, version) {
   return db.exec('UPDATE packages SET downloads = downloads + 1 WHERE name = ? and version = ?;', [name, version])
+}
+
+def get_packages_count() {
+  var res = db.fetch('SELECT COUNT(*) as count FROM packages;')
+  if res return res[0].count
+  return 0
+}
+
+def get_all_download_count() {
+  var res = db.fetch('SELECT SUM(downloads) as count FROM packages')
+  if res return res[0].count
+  return 0
 }
 
 # create tables if not exists...

@@ -1,0 +1,151 @@
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: #10907c;
+}
+
+a:hover {
+  color: #11c1a6;
+}
+
+input:focus {
+  box-shadow: none !important;
+}
+
+.columns {
+  margin: 0;
+}
+
+.divide {
+  border-bottom: 1px solid rgba(0, 0, 0, .05);
+}
+
+.hero {
+  border-bottom: 1px solid #d0f2ed;
+  position: relative;
+}
+
+.hero::before, .stats::before {    
+  content: "";
+  background-image: url(../images/hero-bg-1.png);
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: 0.25;
+}
+
+.hero .control.has-icons-left .input:focus~.icon, .navi .control.has-icons-left .input:focus~.icon {
+  color: #04d1b3;
+}
+
+.navbar-item, .navbar-link {
+  color: #7d7d7d;
+  font-weight: 500;
+}
+
+.navbar a.navbar-item:hover, .navbar a.navbar-item:focus {
+  background-color: #0000;
+  color: #4e4e4e;
+}
+
+.fill-image img {
+  max-width: 100%;
+}
+
+.vertical-middle {
+  vertical-align: middle;
+}
+
+.px-12 {
+  padding-left: 6rem !important;
+  padding-right: 6rem !important;
+}
+
+.py-12 {
+  padding-top: 6rem !important;
+  padding-bottom: 6rem !important;
+}
+
+.stats {
+  position: relative;
+}
+
+.stats .media+.media {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.tile.is-child {
+  margin: 1rem !important;
+  padding: 1rem;
+  box-shadow: 0 0 10px rgb(0, 0, 0, .1);
+  border-radius: 0.5em;
+  border: 1px solid rgba(0, 0, 0, .05);
+}
+
+.tile.is-child .title {
+  font-size: 1.25rem;
+}
+
+.tile.is-child .subtitle {
+  font-size: .95rem;
+  margin-bottom: 0.75rem;
+}
+
+.tile.is-child .content {
+  font-size: .9rem;
+}
+
+.tile .timestamp {
+  font-size: .95rem;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.25rem;
+  color: #999;
+}
+
+.line-top {
+  border-top: 2px solid rgba(0, 0, 0, .05);
+}
+
+footer nav a {
+  margin: 0 1em;
+}
+
+footer nav a:first-of-type {
+  margin-left: 0;
+}
+
+footer nav a:last-of-type{
+  margin-right: 0;
+  border-right: 0;
+}
+
+footer nav span {
+  border-right: 1px solid rgba(0, 0, 0, .1);
+}
+
+.search-item {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(0, 0, 0, .1);
+}
+
+.search-item:first-of-type {
+  border-top: 0;
+}
+
+.search-item .title {
+  font-size: 1.5rem;
+}
+
+.search-item .subtitle {
+  font-size: 1rem;
+  color: #999;
+  margin-bottom: .95rem;
+}

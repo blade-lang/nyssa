@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <title>{query} - Nyssa Package Manager</title>
+</head>
+<body class="">
+  <include path="inc/header.html" />
+  <div class="has-background-primary-light px-6 pb-5 divide navi">
+    <include path="inc/search-bar.html" />
+  </div>
+  
+  <section class="py-6">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-one-quarter"></div>
+        <div class="search-result column is-three-quarter">
+          <div class="search-item" ny-for="result.packages" ny-key="package">
+            <div class="title">
+              <a href="#">{package.name}</a>
+            </div>
+            <div class="subtitle">
+              <a href="#">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span>
+            </div>
+            <div class="content">
+              <div>
+                <span ny-if="package.description">
+                  {package.description}
+                </span>
+                <em ny-not="package.description">No description.</em>
+              </div>
+              <span ny-if="package.tags" ny-for="packages.tags" ny-key="tag">{tag}</span>
+            </div>
+          </div>
+          <div class="has-text-centered" ny-not="result.packages">
+            No package found matching the term "{query}"
+          </div>
+      
+          <div ny-if="result"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <include path="inc/footer.html" />
+</body>
+</html>

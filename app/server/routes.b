@@ -1,13 +1,18 @@
+import .api
 import .views
 import .statics
 
 var routes = {
+  # api endpoints
   '/static/*': ['GET', statics.static_handler],
   '/source/*': ['GET', statics.source_handler],
+  '/packages': ['GET', api.all_package],
+  '/create-package': ['POST', api.create_package],
+  '/get-package/{name}': ['GET', api.get_package],
+  '/create-publisher': ['POST', api.create_publisher],
+  '/login': ['POST', api.login],
+
+  # frontend website pages
   '/': ['GET', views.home],
-  '/packages': ['GET', views.all_package],
-  '/create-package': ['POST', views.create_package],
-  '/get-package/{name}': ['GET', views.get_package],
-  '/create-publisher': ['POST', views.create_publisher],
-  '/login': ['POST', views.login],
+  '/search': ['GET', views.search],
 }

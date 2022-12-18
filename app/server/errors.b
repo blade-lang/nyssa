@@ -13,13 +13,10 @@ def not_found(req, res) {
 }
 
 def server_error(err, req, res) {
-  res.body = ''
+  res.body = bytes(0)
   _error(500, req, res)
 
   var error = 'Error: ${err.message}\nTrace:\n${err.stacktrace}'
-
-  res.write('\n')
-  res.write('\n${error}')
 
   log.error(error)
 }

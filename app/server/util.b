@@ -37,3 +37,9 @@ def validate_auth_data(req, res) {
   log.info('Publisher "${publisher.username}" authenticated!')
   return publisher
 }
+
+def format_number(number) {
+  var parts = to_string(number).split('.')
+  parts[0] = parts[0].replace('/\B(?=(\d{3})+(?!\d))/', ',')
+  return '.'.join(parts)
+}
