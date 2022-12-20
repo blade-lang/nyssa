@@ -298,7 +298,7 @@ def lexSkipTag(tagName, state) {
       jumpPosition(state.position, state.str, nextTag)
       state.tokens.append({
         type: 'text',
-        content: str[textStart.index, nextTag],
+        content: state.str[textStart.index, nextTag],
         position: {
           start: textStart,
           end: state.position.clone(),

@@ -23,6 +23,9 @@ def search(req, res) {
 
   var query = req.queries.q
   var result = db.search_package('%${query}%')
+  for pack in result.packages {
+    pack.tags = json.decode(pack.tags)
+  }
 
   res.write(template('search', {
     query: query,

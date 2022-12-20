@@ -126,12 +126,14 @@ def search_package(query, page) {
 
   var lower_limit = (page - 1) * per_page # 10 per page
 
-  var count = db.fetch('SELECT count(*) as count FROM packages WHERE name LIKE :query OR description LIKE :query OR author LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC;', {':query': query})[0].count
+  var count = db.fetch('SELECT count(*) as count FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC;', {':query': query})
+  if !count count = 0
+  else count = count[0].count
 
   return {
     total: count,
     pages: math.ceil(count / per_page),
-    packages: db.fetch('SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR author LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC LIMIT ${lower_limit}, ${per_page};', {':query': query}),
+    packages: db.fetch('SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC LIMIT ${lower_limit}, ${per_page};', {':query': query}),
   }
 }
 

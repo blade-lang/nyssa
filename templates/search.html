@@ -25,7 +25,7 @@
               <a href="#">{package.name}</a>
             </div>
             <div class="subtitle">
-              <a href="#">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span>
+              <a href="/search?q={package.publisher}">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span>
             </div>
             <div class="content">
               <div>
@@ -34,7 +34,9 @@
                 </span>
                 <em ny-not="package.description">No description.</em>
               </div>
-              <span ny-if="package.tags" ny-for="packages.tags" ny-key="tag">{tag}</span>
+              <div class="tags mt-4" ny-if="package.tags">
+                <a href="/search?q={tag}" class="tag is-light" ny-for="package.tags" ny-key="tag">{tag}</a>
+              </div>
             </div>
           </div>
           <div class="has-text-centered" ny-not="result.packages">

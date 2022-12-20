@@ -31,24 +31,30 @@ def _strip_attr(element, ...) {
 }
 
 def _extract_var(variables, _var) {
-  var _vars = _var.split('.')
+  var _var_split = _var.split('|')
+  if _var_split {
+    var _vars = _var_split[0].split('.')
+    var _real_var
 
-  if variables.contains(_vars[0]) {
-    if _vars.length() > 1 {
-      var final_var = variables[_vars[0]]
-      iter var i = 1; i < _vars.length(); i++ {
-        if is_dict(final_var) {
-          final_var = final_var[_vars[i].matches('/^\d+$/') ? to_number(_vars[i]) : _vars[i]]
-        } else if (is_list(final_var) or is_string(final_var)) and _vars[i].matches('/^\d+$/') {
-          final_var = final_var[to_number(_vars[i])]
-        } else {
-          die Exception('could not resolve ${_var}')
+    if variables.contains(_vars[0]) {
+      if _vars.length() > 1 {
+        var final_var = variables[_vars[0]]
+        iter var i = 1; i < _vars.length(); i++ {
+          if is_dict(final_var) {
+            final_var = final_var[_vars[i].matches('/^\d+$/') ? to_number(_vars[i]) : _vars[i]]
+          } else if (is_list(final_var) or is_string(final_var)) and _vars[i].matches('/^\d+$/') {
+            final_var = final_var[to_number(_vars[i])]
+          } else {
+            die Exception('could not resolve ${_var} at ${_vars[i]}')
+          }
         }
+
+        _real_var = final_var
+      } else {
+        _real_var = variables[_vars[0]]
       }
 
-      return final_var
-    } else {
-      return variables[_vars[0]]
+      return _real_var
     }
   }
 
@@ -62,7 +68,7 @@ def _replace_vars(content, variables) {
   # contain variables as well.
   var var_vars = content.matches('~(?<![{])\{(?P<variable>([a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)*))\}~')
   if var_vars {
-    var_vars = json.decode(json.encode(var_vars))
+    # var_vars = json.decode(json.encode(var_vars))
     for _var in var_vars.variable {
       content = content.replace('~(?<![{])\{${_var}\}~', to_string(_extract_var(variables, _var)))
     }
@@ -73,6 +79,12 @@ def _replace_vars(content, variables) {
 }
 
 def _process(path, element, variables) {
+  if !element return nil
+
+  if is_string(element) {
+    return _replace_vars(element, variables)
+  }
+
   if is_list(element) {
     return iters.map(element, | el | {
       return _process(path, el, variables)
@@ -82,9 +94,12 @@ def _process(path, element, variables) {
   def error(message) {
     die Exception('${message} at ${path}[${element.position.start.line},${element.position.start.column}]')
   }
-
-  # handle data here
-  if element.type == 'element' {
+  
+  if element.type == 'text' {
+    # replace variables: {var_name}
+    element.content = _process(path, element.content, variables)
+    return element
+  } else {
     var attrs = _attrs(element.attributes)
 
     if element {
@@ -138,17 +153,18 @@ def _process(path, element, variables) {
           value_name = attrs.get('ny-value', nil)
 
       _strip_attr(element, 'ny-for', 'ny-key', 'ny-value')
+      var for_vars = variables.clone()
+      var el
 
-      var result = []
-      for key, value in data {
-        var for_vars = variables.clone()
-        for_vars.extend({
-          '${key_name}': value_name ? key : value
-        })
+      return iters.map(data, |value, key| {
+        for_vars.set('${key_name}', value_name ? key : value)
         if value_name for_vars.set('${value_name}', value)
-        result.append(_process(path, element, for_vars))
-      }
-      element = result
+        return _process(path, json.decode(json.encode(element)), for_vars)
+      })
+    }
+    
+    if element and element.contains('children') and element.children {
+      element.children = _process(path, element.children, variables)
     }
 
     # replace attribute variables...
@@ -156,23 +172,13 @@ def _process(path, element, variables) {
       for attr in element.attributes {
         if attr.value {
           # replace variables: {var_name}
-          attr.value = _replace_vars(attr.value, variables)
+          attr.value = _process(path, attr.value, variables)
         }
       }
     }
-  } else if element.type == 'text' {
 
-    # replace variables: {var_name}
-    if element.content {
-      element.content = _replace_vars(element.content, variables)
-    }
+    return element
   }
-
-  if element and element.contains('children') and element.children {
-    element.children = _process(path, element.children, variables)
-  }
-
-  return element
 }
 
 def template(name, variables) {
