@@ -32,6 +32,7 @@ def run(value, options, success, error) {
   var repo = options.get('repo', setup.DEFAULT_REPOSITORY),
       state_file = os.join_paths(os.args[1], setup.STATE_FILE),
       config_file = os.join_paths(os.cwd(), setup.CONFIG_FILE),
+      readme_file = os.join_paths(os.cwd(), setup.README_FILE),
       tmp_dest
 
   try {
@@ -69,6 +70,7 @@ def run(value, options, success, error) {
         version: config.version,
         config: json.encode(config),
         source: file(tmp_dest),
+        readme: file(readme_file).exists() ? file(readme_file).read() : nil,
       })
       var body = json.decode(res.body.to_string())
 

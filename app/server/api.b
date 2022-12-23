@@ -63,7 +63,8 @@ def create_package(req, res) {
       "name": string,
       "version": string,
       "source": file,
-      "config": string
+      "config": string,
+      "readme": string
     } */
   if !req.body or !is_dict(req.body)
     return res.fail(status.BAD_REQUEST)
@@ -73,6 +74,7 @@ def create_package(req, res) {
     var name = req.body.get('name', nil),
       version = req.body.get('version', nil),
       config = req.body.get('config', nil),
+      readme = req.body.get('readme', nil),
       source = req.files.get('source', nil)
 
     if !name or !version or !config or !source
@@ -103,7 +105,7 @@ def create_package(req, res) {
     if !file(file_path, 'wb').write(source.content)
       return res.fail(status.UNPROCESSABLE_ENTITY)  # consider using UNSUPPORTED_MEDIA_TYPE
 
-    var pkg = package(publisher.username, name, version, config, file_name)
+    var pkg = package(publisher.username, name, version, config, readme, file_name)
 
     # then write to db
     if db.create_package(pkg) == 0

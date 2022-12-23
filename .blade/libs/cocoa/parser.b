@@ -16,7 +16,7 @@ def parser(tokens, options) {
 }
 
 def hasTerminalParent(tagName, stack, terminals) {
-  var tagParents = terminals.contains(tagName)
+  var tagParents = terminals.get(tagName, nil)
   if tagParents {
     var currentIndex = stack.length() - 1
     while currentIndex >= 0 {

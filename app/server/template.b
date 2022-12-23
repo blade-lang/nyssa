@@ -4,6 +4,7 @@ import cocoa
 import iters
 import ..setup
 import ..log
+import .util
 
 var templates_directory = os.join_paths(os.args[1], setup.TEMPLATES_DIR)
 
@@ -11,30 +12,57 @@ var templates_directory = os.join_paths(os.args[1], setup.TEMPLATES_DIR)
 if !os.dir_exists(templates_directory)
   os.create_dir(templates_directory)
 
-def _attrs(attrs) {
+var functions = {
+  length: | t | {
+    return t.length()
+  },
+  plus_one: | t | {
+    return t + 1
+  },
+  format_number: | t | {
+    return util.format_number(t)
+  },
+  strip_line: | t | {
+    return t.replace('\n', '\\n')
+  },
+  sort_name: | t | {
+    return t == 'name'
+  },
+  sort_download: | t | {
+    return t == 'downloads'
+  },
+  sort_created: | t | {
+    return t == 'created_at'
+  },
+  br: | t | {
+    return t.replace('\n', '<br>')
+  }
+}
+
+def get_attrs(attrs) {
   return iters.reduce(attrs, | dict, attr | {
     dict.set(attr.key, attr.value)
     return dict
   }, {})
 }
 
-def _strip(txt) {
+def strip(txt) {
   # remove comments and surrounding white space
   return txt.trim().replace('/(?=<!--)([\s\S]*?)-->\\n*/m', '')
 }
 
-def _strip_attr(element, ...) {
+def strip_attr(element, ...) {
   var attrs = __args__
   element.attributes = iters.filter(element.attributes, | el | {
     return !attrs.contains(el.key)
   })
 }
 
-def _extract_var(variables, _var) {
-  var _var_split = _var.split('|')
-  if _var_split {
-    var _vars = _var_split[0].split('.')
-    var _real_var
+def extract_var(variables, _var) {
+  var var_split = _var.split('|')
+  if var_split {
+    var _vars = var_split[0].split('.')
+    var real_var
 
     if variables.contains(_vars[0]) {
       if _vars.length() > 1 {
@@ -49,28 +77,36 @@ def _extract_var(variables, _var) {
           }
         }
 
-        _real_var = final_var
+        real_var = final_var
       } else {
-        _real_var = variables[_vars[0]]
+        real_var = variables[_vars[0]]
       }
 
-      return _real_var
+      if var_split.length() > 1 {
+        iter var i = 1; i < var_split.length(); i++ {
+          if functions.contains(var_split[i]) {
+            real_var = functions[var_split[i]](real_var)
+          }
+        }
+      }
+
+      return real_var
     }
   }
 
   return ''
 }
 
-def _replace_vars(content, variables) {
+def replace_vars(content, variables) {
   # replace variables: {var_name}
   # 
   # NOTE: This must come last as previous actions could generate or 
   # contain variables as well.
-  var var_vars = content.matches('~(?<![{])\{(?P<variable>([a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)*))\}~')
+  var var_vars = content.matches('~(?<![{])\{(?P<variable>([a-zA-Z_][a-zA-Z0-9_|]*(\.[a-zA-Z0-9_|]+)*))\}~')
   if var_vars {
     # var_vars = json.decode(json.encode(var_vars))
     for _var in var_vars.variable {
-      content = content.replace('~(?<![{])\{${_var}\}~', to_string(_extract_var(variables, _var)))
+      content = content.replace('{${_var}}', to_string(extract_var(variables, _var)))
     }
   }
   
@@ -78,16 +114,16 @@ def _replace_vars(content, variables) {
   return content.replace('~\\{\\{~', '{')
 }
 
-def _process(path, element, variables) {
+def process(path, element, variables) {
   if !element return nil
 
   if is_string(element) {
-    return _replace_vars(element, variables)
+    return replace_vars(element, variables)
   }
 
   if is_list(element) {
     return iters.map(element, | el | {
-      return _process(path, el, variables)
+      return process(path, el, variables)
     }).compact()
   }
 
@@ -97,10 +133,10 @@ def _process(path, element, variables) {
   
   if element.type == 'text' {
     # replace variables: {var_name}
-    element.content = _process(path, element.content, variables)
+    element.content = process(path, element.content, variables)
     return element
   } else {
-    var attrs = _attrs(element.attributes)
+    var attrs = get_attrs(element.attributes)
 
     if element {
       # process special elements
@@ -115,7 +151,7 @@ def _process(path, element, variables) {
           if !includePath.ends_with('.html') includePath += '.html'
           var fl = file(includePath)
           if fl.exists() {
-            element = _process(includePath, cocoa.decode(_strip(fl.read()), {includePositions: true}), variables)
+            element = process(includePath, cocoa.decode(strip(fl.read()), {includePositions: true}), variables)
           } else {
             error('file "${attrs.path}" not found')
           }
@@ -127,19 +163,19 @@ def _process(path, element, variables) {
 
     if attrs.contains('ny-if') {
       # if tag
-      var _var = _extract_var(variables, attrs.get('ny-if'))
+      var _var = extract_var(variables, attrs.get('ny-if'))
       if _var {
-        _strip_attr(element, 'ny-if')
-        element = _process(path, element, variables)
+        strip_attr(element, 'ny-if')
+        element = process(path, element, variables)
       } else {
         element = nil
       }
     } else if attrs.contains('ny-not') {
       # if not tag
-      var _var = _extract_var(variables, attrs.get('ny-not'))
+      var _var = extract_var(variables, attrs.get('ny-not'))
       if !_var {
-        _strip_attr(element, 'ny-not')
-        element = _process(path, element, variables)
+        strip_attr(element, 'ny-not')
+        element = process(path, element, variables)
       } else {
         element = nil
       }
@@ -148,23 +184,29 @@ def _process(path, element, variables) {
       if !attrs or !attrs.contains('ny-key')
         error('missing "ny-key" attribute for `for` tag')
       
-      var data = _extract_var(variables, attrs.get('ny-for')),
+      var data = extract_var(variables, attrs.get('ny-for')),
           key_name = attrs.get('ny-key'),
           value_name = attrs.get('ny-value', nil)
 
-      _strip_attr(element, 'ny-for', 'ny-key', 'ny-value')
+      strip_attr(element, 'ny-for', 'ny-key', 'ny-value')
       var for_vars = variables.clone()
-      var el
 
-      return iters.map(data, |value, key| {
+      var result = []
+      for key, value in data {
         for_vars.set('${key_name}', value_name ? key : value)
         if value_name for_vars.set('${value_name}', value)
-        return _process(path, json.decode(json.encode(element)), for_vars)
-      })
+        result.append(process(path, json.decode(json.encode(element)), for_vars))
+      }
+      return result
+      /* return iters.map(data, |value, key| {
+        for_vars.set('${key_name}', value_name ? key : value)
+        if value_name for_vars.set('${value_name}', value)
+        return process(path, json.decode(json.encode(element)), for_vars)
+      }) */
     }
     
     if element and element.contains('children') and element.children {
-      element.children = _process(path, element.children, variables)
+      element.children = process(path, element.children, variables)
     }
 
     # replace attribute variables...
@@ -172,7 +214,7 @@ def _process(path, element, variables) {
       for attr in element.attributes {
         if attr.value {
           # replace variables: {var_name}
-          attr.value = _process(path, attr.value, variables)
+          attr.value = process(path, attr.value, variables)
         }
       }
     }
@@ -194,10 +236,10 @@ def template(name, variables) {
 
   var template_file = file(path)
   if template_file.exists() {
-    var file_content = _strip(template_file.read())
+    var file_content = strip(template_file.read())
 
     return cocoa.encode(
-      _process(
+      process(
         path,
         cocoa.decode(file_content, {includePositions: true}),
         variables

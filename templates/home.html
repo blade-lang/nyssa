@@ -49,7 +49,7 @@
         </figure>
         <div class="media-content">
           <p class="heading is-size-6">Authors</p>
-          <p class="title is-size-3 has-text-white">{publishers}</p>
+          <p class="title is-size-3 has-text-white">{publishers|format_number}</p>
         </div>
       </article>
       <article class="media">
@@ -60,7 +60,7 @@
         </figure>
         <div class="media-content">
           <p class="heading is-size-6">Total Packages</p>
-          <p class="title is-size-3 has-text-white">{packages}</p>
+          <p class="title is-size-3 has-text-white">{packages|format_number}</p>
         </div>
       </article>
       <article class="media">
@@ -71,7 +71,7 @@
         </figure>
         <div class="media-content">
           <p class="heading is-size-6">Downloads</p>
-          <p class="title is-size-3 has-text-white">{downloads}</p>
+          <p class="title is-size-3 has-text-white">{downloads|format_number}</p>
         </div>
       </article>
     </div>
@@ -88,10 +88,10 @@
             <div class="tile is-parent">
               <div class="tile is-child" ny-for="top_packages" ny-key="package">
                 <div class="title">
-                  <a href="#">{package.name}</a>
+                  <a href="/view/{package.name}">{package.name}</a>
                 </div>
                 <div class="subtitle">
-                  <a href="#">@{package.publisher}</a>
+                  <a href="/search?q={package.publisher}">@{package.publisher}</a>
                 </div>
                 <div class="content">
                   <span ny-if="package.description">{package.description}</span>
@@ -118,10 +118,10 @@
                   <small>{package.date_created}</small>
                 </div>
                 <div class="title">
-                  <a href="#">{package.name}</a>
+                  <a href="/view/{package.name}">{package.name}</a>
                 </div>
                 <div class="subtitle">
-                  <a href="#">@{package.publisher}</a>
+                  <a href="/search?q={package.publisher}">@{package.publisher}</a>
                 </div>
                 <div class="content">
                   <span ny-if="package.description">{package.description}</span>

@@ -15,4 +15,5 @@ var routes = {
   # frontend website pages
   '/': ['GET', views.home],
   '/search': ['GET', views.search],
+  '/view/{id}': ['GET', views.view],
 }

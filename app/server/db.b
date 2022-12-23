@@ -34,6 +34,7 @@ def create_tables() {
       'version TEXT NOT NULL,' +
       'source TEXT NOT NULL,' +
       'config TEXT NOT NULL,' +
+      'readme TEXT NULL,' +
 
       # extracted columns start
       'description TEXT GENERATED ALWAYS AS (json_extract(config, \'$.description\')) VIRTUAL,' +
@@ -105,7 +106,7 @@ def get_packages() {
 
 def get_top_packages(order) {
   if !order order = 'downloads'
-  return db.fetch("SELECT name, publisher, description, replace(created_at, '-', '/') as date_created FROM packages GROUP BY name ORDER BY ${order} LIMIT 4;")
+  return db.fetch("SELECT id, name, publisher, description, replace(created_at, '-', '/') as date_created FROM packages GROUP BY name ORDER BY ${order} LIMIT 4;")
 }
 
 def get_package(name, version) {
@@ -120,30 +121,38 @@ def get_package(name, version) {
   return nil
 }
 
-def search_package(query, page) {
+def search_package(query, page, order) {
   if !page page = 1
+  if !order order = 'downloads'
   var per_page = setup.PACKAGES_PER_PAGE or 10
 
   var lower_limit = (page - 1) * per_page # 10 per page
 
-  var count = db.fetch('SELECT count(*) as count FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC;', {':query': query})
+  var count = db.fetch('SELECT count(*) as count FROM (SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name);', {':query': query})
   if !count count = 0
   else count = count[0].count
 
+  var result = db.fetch('SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name ORDER BY ${order} LIMIT ${lower_limit}, ${per_page};', {':query': query})
+  var start = per_page * (page -1)
+
   return {
-    total: count,
+    packages: result,
+    page: page,
     pages: math.ceil(count / per_page),
-    packages: db.fetch('SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name ORDER BY downloads DESC LIMIT ${lower_limit}, ${per_page};', {':query': query}),
+    start: start,
+    end: start + result.length(),
+    total: count,
   }
 }
 
 def create_package(package) {
-  if db.exec('INSERT INTO packages (publisher, name, version, source, config) VALUES (?, ?, ?, ?, ?);', [
+  if db.exec('INSERT INTO packages (publisher, name, version, source, config, readme) VALUES (?, ?, ?, ?, ?, ?);', [
     package.publisher,
     package.name,
     package.version,
     package.source,
-    json.encode(package.config)
+    json.encode(package.config),
+    package.readme
   ]) return db.last_insert_id()
   return 0
 }

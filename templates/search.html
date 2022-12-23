@@ -18,37 +18,91 @@
   <section class="py-6">
     <div class="container">
       <div class="columns">
-        <div class="column is-one-quarter"></div>
-        <div class="search-result column is-three-quarter">
-          <div class="search-item" ny-for="result.packages" ny-key="package">
-            <div class="title">
-              <a href="#">{package.name}</a>
+        <form class="column is-one-quarter" name="sortform">
+          <div class="content">
+            <div class="title">Sort by</div>
+          </div>
+          <div class="control">
+            <div>
+              <label class="radio">
+                <input type="radio" name="order" value="name" ny-if="sort|sort_name" checked>
+                <input type="radio" name="order" value="name" ny-not="sort|sort_name">
+                Name
+              </label>
             </div>
-            <div class="subtitle">
-              <a href="/search?q={package.publisher}">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span>
+            <div>
+              <label class="radio">
+                <input type="radio" name="order" value="downloads" ny-if="sort|sort_download" checked>
+                <input type="radio" name="order" value="downloads" ny-not="sort|sort_download">
+                Downloads
+              </label>
             </div>
-            <div class="content">
-              <div>
-                <span ny-if="package.description">
-                  {package.description}
-                </span>
-                <em ny-not="package.description">No description.</em>
-              </div>
-              <div class="tags mt-4" ny-if="package.tags">
-                <a href="/search?q={tag}" class="tag is-light" ny-for="package.tags" ny-key="tag">{tag}</a>
-              </div>
+            <div>
+              <label class="radio">
+                <input type="radio" name="order" value="created_at" ny-if="sort|sort_created" checked>
+                <input type="radio" name="order" value="created_at" ny-not="sort|sort_created">
+                Date Created
+              </label>
             </div>
           </div>
-          <div class="has-text-centered" ny-not="result.packages">
-            No package found matching the term "{query}"
+        </form>
+        <div class="column is-three-quarter">
+          <div class="mb-4" ny-if="result.packages">
+            Showing result {result.start|plus_one} to {result.end} of {result.total} (page {result.page} of {result.pages})
           </div>
-      
-          <div ny-if="result"></div>
+          <div class="search-result">
+            <div class="search-item" ny-for="result.packages" ny-key="package">
+              <div class="title">
+                <a href="/view/{package.name}">{package.name}</a>
+              </div>
+              <div class="subtitle">
+                <a href="/search?q={package.publisher}">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span> with <span>{package.downloads|format_number}</span> downloads
+              </div>
+              <div class="content">
+                <div>
+                  <span ny-if="package.description">
+                    {package.description|strip_line}
+                  </span>
+                  <em ny-not="package.description">No description.</em>
+                </div>
+                <div class="tags mt-4" ny-if="package.tags">
+                  <a href="/search?q={tag}" class="tag is-light" ny-for="package.tags" ny-key="tag">{tag}</a>
+                </div>
+              </div>
+            </div>
+            <div class="has-text-centered" ny-not="result.packages">
+              No package found matching the term "{query}"
+            </div>
+          </div>
+          <nav class="pagination mt-6" role="navigation" aria-label="pagination" ny-if="result.packages">
+            <ul class="pagination-list">
+              <li ny-for="pages" ny-key="p">
+                <a ny-if="p.active" class="pagination-link is-current" aria-label="Goto page {p.page}">{p.page}</a>
+                <a ny-not="p.active" href="/search?q={query}&page={p.page}" class="pagination-link" aria-label="Goto page {p.page}">{p.page}</a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>
   </section>
 
   <include path="inc/footer.html" />
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var rad = document.sortform.order;
+      var prev = null;
+      for (var i = 0; i < rad.length; i++) {
+        rad[i].addEventListener('change', function() {
+          if (this !== prev) {
+            prev = this;
+          }
+          document.searchform.sort.value = this.value
+          document.searchform.submit()
+        });
+      }
+    })
+  </script>
 </body>
 </html>
