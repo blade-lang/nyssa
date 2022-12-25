@@ -1,7 +1,8 @@
 import os
 import json
-import cocoa
 import iters
+import cocoa
+import drawdown
 import ..setup
 import ..log
 import .util
@@ -36,6 +37,9 @@ var functions = {
   },
   br: | t | {
     return t.replace('\n', '<br>')
+  },
+  draw: | t | {
+    return drawdown.markdown(t)
   }
 }
 

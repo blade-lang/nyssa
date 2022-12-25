@@ -64,6 +64,13 @@ def view(req, res) {
   if package {
     package.deps = json.decode(package.deps)
     package.tags = json.decode(package.tags)
+    package['versions'] = db.get_package_versions(name)
+  } else {
+    if !req.queries.contains('q') {
+      # redirect to home
+      res.redirect('/404')
+      return
+    }
   }
   res.write(template('view', {
     package: package,

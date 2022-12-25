@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
   <link rel="stylesheet" href="../static/css/style.css">
   <title>{name} - Nyssa Package Manager</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="../static/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../static/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../static/images/favicon-16x16.png">
+  <link rel="manifest" href="../static/site-2.webmanifest">
 </head>
 <body class="">
   <include path="inc/header.html" />
@@ -35,11 +39,22 @@
               <ul class="ml-0 pl-0">
                 <li class="is-active" tab-id="readme"><a>ReadMe</a></li>
                 <li tab-id="dependencies"><a>Dependencies</a></li>
-                <li tab-id="versions"><a>Versions</a></li>
+                <li tab-id="versions" ny-not="version"><a>Versions</a></li>
               </ul>
             </div>
-            <div id="readme-content">{package.readme|br}</div>
-            <div id="versions-content" class="is-hidden">Versions.</div>
+            <div id="readme-content">{package.readme|draw}</div>
+            <div ny-not="version" id="versions-content" class="is-hidden">
+              <ul ny-if="package.versions">
+                <li ny-for="package.versions" ny-key="name" ny-value="ver">
+                  <a href="/view/{package.name}@{ver.version}">{package.name} - {ver.version}</a>
+                </li>
+              </ul>
+              <ul ny-not="package.versions">
+                <li>
+                  <a href="/view/{package.name}@{package.version}">{package.name} - {package.version}</a>
+                </li>
+              </ul>
+            </div>
             <div id="dependencies-content" class="is-hidden">
               <ul ny-if="package.deps">
                 <li ny-for="package.deps" ny-key="name" ny-value="version">
@@ -66,8 +81,12 @@
             <div class="tags mt-4" ny-if="package.tags">
               <a href="/search?q={tag}" class="tag is-light" ny-for="package.tags" ny-key="tag">{tag}</a>
             </div>
-            <div class="mt-4">License: {package.license}</div>
-            <div class="mt-4" ny-if="package.homepage"><a target="_blank" href="{package.homepage}">Homepage</a></div>
+            <div class="title is-5 mb-2 mt-5" ny-if="package.homepage">Homepage</div>
+            <div ny-if="package.homepage">
+              <a target="_blank" href="{package.homepage}">{package.homepage}</a>
+            </div>
+            <div class="mt-4"><strong>License:</strong> <span>{package.license}</span></div>
+            <div class="mt-4"><strong>Downloads:</strong> <span>{package.downloads}</span></div>
           </div>
         </div>
       </div>

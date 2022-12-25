@@ -121,6 +121,10 @@ def get_package(name, version) {
   return nil
 }
 
+def get_package_versions(name) {
+  return db.fetch('SELECT version FROM packages WHERE name = ? ORDER BY id DESC', [name])
+}
+
 def search_package(query, page, order) {
   if !page page = 1
   if !order order = 'downloads'

@@ -15,7 +15,7 @@ input:focus {
 }
 
 pre {
-  white-space: inherit !important;
+  white-space: pre-wrap;
   border-radius: .25rem;
 }
 

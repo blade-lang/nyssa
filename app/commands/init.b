@@ -170,8 +170,9 @@ def _default(t) {
 }
 
 def get_package_config() {
+  var default_name = os.base_name(os.cwd())
   return Config.from_dict({
-    name: io.readline('package name:').trim(),
+    name: io.readline('package name ${_default(default_name)}:').trim() or default_name,
     version: io.readline('version ${_default("1.0.0")}:').trim() or '1.0.0',
     description: io.readline('description:').trim(),
     homepage: io.readline('homepage:').trim(),
