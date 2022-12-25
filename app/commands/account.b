@@ -52,7 +52,7 @@ def create(repo, success, error) {
 
   try {
     log.info('Creating new publisher account at ${repo}.')
-    var res = http.post('${repo}/create-publisher', details)
+    var res = http.post('${repo}/api/create-publisher', details)
     var body = json.decode(res.body.to_string())
 
     if res.status == 200 {
@@ -92,7 +92,7 @@ def login(repo, success, error) {
 
   try {
     log.info('Login in to publisher account at ${repo}.')
-    var res = http.post('${repo}/login', details)
+    var res = http.post('${repo}/api/login', details)
     var body = json.decode(res.body.to_string())
 
     if res.status == 200 {

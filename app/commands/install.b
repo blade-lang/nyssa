@@ -134,7 +134,7 @@ def install(config, repo, full_name, name, version, is_global, with_cache, progr
 
     # fresh install
     log.info('>>> Fetching package metadata for ${full_name}')
-    var res = http.get('${repo}/get-package/${full_name}')
+    var res = http.get('${repo}/api/get-package/${full_name}')
     var body = json.decode(res.body.to_string())
 
     if res.status == 200 {

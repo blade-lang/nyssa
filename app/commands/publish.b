@@ -65,7 +65,7 @@ def run(value, options, success, error) {
 
       # make the request
       log.info('Uploading ${config.name}@${config.version} to ${repo}...')
-      var res = client.send_request('${repo}/create-package', 'POST', {
+      var res = client.send_request('${repo}/api/create-package', 'POST', {
         name: config.name,
         version: config.version,
         config: json.encode(config),
