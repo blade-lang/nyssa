@@ -63,11 +63,17 @@ for o in options {
   o.parse(parser)
 }
 
-def success(msg) {
+def success(msg, info) {
   io.stderr.write(colors.text(
     colors.text(log.info(msg, true) + '\n', colors.text_color.green),
     colors.style.bold
   ))
+  if info {
+    io.stderr.write(colors.text(
+      colors.text('\n' + info + '\n', colors.text_color.blue),
+      colors.style.italic
+    ))
+  }
   os.exit(0)
 }
 

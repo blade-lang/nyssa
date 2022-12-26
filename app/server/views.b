@@ -1,5 +1,6 @@
 # FROTEND WEB PAGES
 import json
+import bcrypt
 import .template
 import .db
 import .util
@@ -12,6 +13,7 @@ def home(req, res) {
     downloads: db.get_all_download_count(),
     top_packages: db.get_top_packages(),
     latest_packages: db.get_top_packages('created_at DESC'),
+    show_login: !res.session.contains('user'),
   }))
 }
 
@@ -49,7 +51,8 @@ def search(req, res) {
     query: query,
     result: result,
     pages: pagination,
-    sort: sort
+    sort: sort,
+    show_login: !res.session.contains('user'),
   }))
 }
 
@@ -75,6 +78,50 @@ def view(req, res) {
   res.write(template('view', {
     package: package,
     name: req.params.id,
-    version: version
+    version: version,
+    show_login: !res.session.contains('user'),
+  }))
+}
+
+def authenticate(req, res) {
+  if req.body and is_dict(req.body) {
+    var name = req.body.get('username', nil),
+      password = req.body.get('password', nil)
+
+    if name and password {
+      var pub = db.get_publisher(name)
+
+      # authenticate
+      if pub and bcrypt.compare(password, pub.password) {
+        res.session['user'] = pub
+
+        # login success. Redirect to account home
+        # TODO: Redirect to correct user homepage
+        res.redirect('/account')
+        return
+      }
+    }
+  }
+
+  res.redirect('/login?error=1')
+}
+
+def login(req, res) {
+  if res.session.contains('user') {
+    # Redirect to account home
+    # TODO: Redirect to correct user homepage
+    res.redirect('/account')
+    return
+  }
+
+  res.write(template('login', {
+    show_login: true,
+    error: req.queries.get('error', nil)
+  }))
+}
+
+def account(req, res) {
+  res.write(template('account', {
+    show_login: false,
   }))
 }

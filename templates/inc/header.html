@@ -13,7 +13,15 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button">Login</a>
+            <a class="button" href="/login" ny-if="show_login">Login</a>
+            <a class="button is-link" href="/account" ny-not="show_login">
+              <span class="icon-text">
+                <span class="icon">
+                  <i class="fas fa-user"></i>
+                </span>
+                <span>My Account</span>
+              </span>
+            </a>
             <a class="button is-dark" href="https://github.com/blade-lang/nyssa" target="_blank">
               <span class="icon-text">
                 <span class="icon">

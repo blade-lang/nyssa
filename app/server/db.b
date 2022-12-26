@@ -50,6 +50,14 @@ def create_tables() {
       'created_at DATETIME DEFAULT CURRENT_TIMESTAMP,' +
       'deleted_at DATETIME NULL' +
     ');')
+
+    # create the sessions table
+    db.exec('CREATE TABLE IF NOT EXISTS sessions (' +
+        'id INTEGER PRIMARY KEY,' +
+        'key TEXT NOT NULL,' +
+        'data TEXT DEFAULT \'{}\',' +
+        'created_at DATETIME DEFAULT CURRENT_TIMESTAMP' +
+      ');')
 }
 
 # PUBLISHERS
@@ -180,6 +188,31 @@ def get_all_download_count() {
   if res return res[0].count
   return 0
 }
+
+# SESSIONS
+
+def get_session(key) {
+  var res = db.fetch('SELECT data FROM sessions WHERE key = ? ORDER BY id DESC LIMIT 1;', [key])
+  if res return json.decode(res[0].data)
+  return false
+}
+
+def create_session(key) {
+  if db.exec('INSERT INTO sessions (key) VALUES (?);', [key])
+    return db.last_insert_id()
+  return 0
+}
+
+def update_session(key, value) {
+  if db.exec('UPDATE sessions SET data = ? WHERE key = ?;', [value, key])
+    return true
+  return false
+}
+
+def delete_session(key) {
+  return db.exec('DELETE FROM sessions WHERE key = ?;', [key])
+}
+
 
 # create tables if not exists...
 create_tables()

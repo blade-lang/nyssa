@@ -65,7 +65,9 @@ def create(repo, success, error) {
 
       success(
         'Account created successfully!\n' +
-        'Publisher Key: ${body.key}'
+        'Publisher Key: ${body.key}',
+        'Save your key somewhere safe cause you\'ll need it to recover '+
+        'your account if you ever forget your password.'
       )
     } else {
       error('Account creation failed:\n  ${body.error}')

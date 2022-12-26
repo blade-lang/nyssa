@@ -2,6 +2,18 @@
   box-sizing: border-box;
 }
 
+body.no-term-color .navbar, body.no-term-color .footer {
+  background-color: transparent !important;
+}
+
+body.has-head-color .navbar {
+  border-bottom: 1px solid rgba(0, 0, 0, .05);
+}
+
+body.no-foot-color .footer {
+  background-color: transparent !important;
+}
+
 a {
   color: #10907c;
 }

@@ -1,8 +1,11 @@
 import json
+import hash
 import http.status
 import .errors
+import .db
 import .routes { routes }
 import ..log
+import ..setup
 
 def _log_request(req, res) {
   log.info('RepositoryAccess: ${req.ip} - "${req.method} ${req.request_uri} ' +
@@ -31,9 +34,63 @@ def _get_uri_route_data(route, path) {
   return result
 }
 
+def _start_session() {
+  var key = hash.sha1(to_string(microtime()) + rand(111111111, 999999999))
+  if db.create_session(key) > 0 {
+    return key
+  }
+  return nil
+}
+
+def _setup_session(req, res) {
+  res.session = {}
+  res.session_key = nil
+  if req.cookies.contains(setup.SESSION_NAME) {
+    res.session_key = req.cookies[setup.SESSION_NAME]
+    var ses = db.get_session(res.session_key)
+    if is_dict(ses) {
+      res.session.extend(ses)
+    } else {
+      res.session_key = _start_session()
+      res.set_cookie(setup.SESSION_NAME, res.session_key)
+    }
+  } else {
+    res.session_key = _start_session()
+    res.set_cookie(setup.SESSION_NAME, res.session_key)
+  }
+
+  # bind '.clear_session()' to response
+  res.clear_session = || {
+    res.session = {}
+
+    # just for simplicity
+    return nil
+  }
+}
+
 def router(req, res) {
   try {
     var view = errors.not_found
+
+    # Check exact matchs first...
+    if routes.contains(req.path) {
+      var data = routes[req.path]
+      if data[0].upper() == req.method.upper()
+        view = data[1]
+    } else {
+      for route, data in routes {
+        var route_data = _get_uri_route_data(route, req.path)
+        if route_data {
+          if data[0].upper() == req.method.upper() {
+            view = data[1]
+            req.params = route_data
+          }
+        }
+      }
+    }
+
+    # setup session
+    _setup_session(req, res)
 
     # bind '.json()' to response
     res.json = | v | {
@@ -55,24 +112,12 @@ def router(req, res) {
       return nil
     }
 
-    # Check exact matchs first...
-    if routes.contains(req.path) {
-      var data = routes[req.path]
-      if data[0].upper() == req.method.upper()
-        view = data[1]
-    } else {
-      for route, data in routes {
-        var route_data = _get_uri_route_data(route, req.path)
-        if route_data {
-          if data[0].upper() == req.method.upper() {
-            view = data[1]
-            req.params = route_data
-          }
-        }
-      }
-    }
-
     view(req, res)
+
+    # update session
+    if res.session_key {
+      db.update_session(res.session_key, json.encode(res.session))
+    }
   } catch Exception e {
     errors.server_error(e, req, res)
   }
