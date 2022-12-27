@@ -24,7 +24,7 @@ var STATE_FILE = '${STORAGE_DIR}/config.json'
 var REPOSITORY_HOST = '127.0.0.1'
 var REPOSITORY_PORT = 3000
 
-var DEFAULT_REPOSITORY = '${REPOSITORY_HOST}:${REPOSITORY_PORT}'
+var DEFAULT_REPOSITORY = 'nyssa.bladelang.com'
 
 # frontend
 var PACKAGES_PER_PAGE = 10
