@@ -1,6 +1,6 @@
-# Nyssa Package Architecture
+# Nyssa Package Layout
 
-This README describes the technical details of a Nyssa package.
+This document describes the technical details of a Nyssa package.
 
 ### Layout
 

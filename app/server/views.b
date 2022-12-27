@@ -6,6 +6,10 @@ import .db
 import .util
 import ..setup
 
+def error_page(req, res) {
+  res.write(template('404'))
+}
+
 def home(req, res) {
   res.write(template('home', {
     publishers: db.get_publishers_count(),
@@ -200,4 +204,9 @@ def archive(req, res) {
   }
 
   res.redirect('/login')
+}
+
+def logout(req, res) {
+  res.clear_session()
+  res.redirect('/')
 }

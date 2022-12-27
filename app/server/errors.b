@@ -1,5 +1,6 @@
 import http.status
 import json
+import .template
 import ..log
 
 def _error(s, req, res) {
@@ -9,7 +10,9 @@ def _error(s, req, res) {
 }
 
 def not_found(req, res) {
-  _error(404, req, res)
+  res.write(template('404', {
+    show_login: !res.session.contains('user')
+  }))
 }
 
 def server_error(err, req, res) {

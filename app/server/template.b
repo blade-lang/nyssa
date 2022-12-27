@@ -155,7 +155,7 @@ def process(path, element, variables) {
             error('missing "path" attribute for include tag')
   
           var includePath = os.join_paths(templates_directory, attrs.path)
-          if !includePath.ends_with('.html') includePath += '.html'
+          if !includePath.match('/[.][a-zA-Z]+$/') includePath += '.html'
           var fl = file(includePath)
           if fl.exists() {
             element = process(includePath, cocoa.decode(strip(fl.read()), {includePositions: true}), variables)
