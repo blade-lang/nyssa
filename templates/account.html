@@ -45,10 +45,13 @@
         <div class="search-result">
           <div class="search-item" ny-for="result.packages" ny-key="package">
             <div class="title">
-              <a href="/view/{package.name}">{package.name}</a>
+              <a href="/view/{package.name}">
+                {package.name}
+                <code ny-if="package.deleted_at"><small> - Archived</small></code>
+              </a>
             </div>
             <div class="subtitle">
-              <a href="/search?q={package.publisher}">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span> with <span>{package.downloads|format_number}</span> downloads
+              Latest Version: <span>{package.version}</span>, Last Published: <span>{package.created_at}</span>, Total Downloads: <span>{package.downloads|format_number}</span>
             </div>
             <div class="content">
               <div class="tags mb-2">
@@ -81,9 +84,15 @@
                       <div class="control">
                         <button class="button is-warning is-small">Revert</button>
                       </div>
+                      <div class="control">
+                        <a class="button is-danger is-small" href="/archive/{package.name}" ny-not="package.deleted_at">Archive</a>
+                      </div>
                     </div>
                   </div>
                 </form>
+              </div>
+              <div class="mt-2" ny-not="package.versions|can_revert">
+                <a class="button is-danger is-small" href="/archive/{package.name}" ny-not="package.deleted_at">Archive</a>
               </div>
             </div>
           </div>

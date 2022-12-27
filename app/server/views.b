@@ -63,17 +63,15 @@ def view(req, res) {
     var id_split = id.split('@')
     name = id_split[0]; version = id_split[1]
   }
-  var package = db.get_package(name, version)
+  var package = db.get_package_for_view(name, version)
   if package {
     package.deps = json.decode(package.deps)
     package.tags = json.decode(package.tags)
     package['versions'] = db.get_package_versions(name)
   } else {
-    if !req.queries.contains('q') {
-      # redirect to home
-      res.redirect('/404')
-      return
-    }
+    # redirect to not found
+    res.redirect('/404')
+    return
   }
   res.write(template('view', {
     package: package,
@@ -131,6 +129,7 @@ def account(req, res) {
   for pack in result.packages {
     pack.tags = json.decode(pack.tags)
     pack.versions = db.get_package_versions(pack.name)
+    pack.downloads = db.get_all_download_count(pack.name)
   }
 
   var pg = 1..(result.pages + 1)
@@ -167,7 +166,7 @@ def revert(req, res) {
 
     if name and version {
       var package = db.get_package(name, version)
-      if package {
+      if package and package.publisher == res.session['user'].username {
         if db.revert_package(name, package.id) {
           # create flash message
           res.session['message'] = 'Package <strong>${name}</strong> successfully reverted to version <strong>${version}</strong>'
@@ -175,6 +174,28 @@ def revert(req, res) {
         res.redirect('/account')
         return
       }
+    }
+  }
+
+  res.redirect('/login')
+}
+
+def archive(req, res) {
+  if !res.session.contains('user') {
+    res.redirect('/login')
+    return
+  }
+  
+  if req.params {
+    var name = req.params.name
+    var package = db.get_package(name)
+    if package and package.publisher == res.session['user'].username {
+      if db.archive_package(name) {
+        # create flash message
+        res.session['message'] = 'Package <strong>${name}</strong> successfully archived.'
+      }
+      res.redirect('/account')
+      return
     }
   }
 

@@ -1,4 +1,4 @@
-# Nyssa Package Documentation
+# Nyssa Package Architecture
 
 This README describes the technical details of a Nyssa package.
 
@@ -10,8 +10,7 @@ follows:
 - `.blade`: The default Blade pacakges directory which contains 
   installed packages and will only be available when at least one 
   or more package is installed.
-- `tests`: This directory contains unit, integration and all types 
-  of tests for your package.
+- `app`: The directory contains the main application/package code.
 - `examples`: Examples accompanying your package goes here and will
   be shown to users under the `Examples` section of the Nyssa website.
 - `index.b`: The default Blade package index file.
@@ -23,6 +22,8 @@ follows:
   > dcumentation, your package documentation will be expanded to include
   > such documentations.
 - `nyssa.json`: The Nyssa package configuration script.
+- `tests`: This directory contains unit, integration and all types 
+  of tests for your package.
 
 **!Important**
 
@@ -35,10 +36,33 @@ and configure packages.
 ### `nyssa.json`
 
 The `nyssa.json` file is pretty intuitive and is very similar to NodeJS NPM
-package.json files. The basic structure when freshly created by `nyssa init`
-is as follows:
+package.json files. A typical sample of a complete `nyssa.json` file looks like this:
 
 ```json
+{
+  "name": "sample", 
+  "version": "0.1.0", 
+  "description": "An example package", 
+  "homepage": "", 
+  "tags": [
+    "tag1",
+    "tag2",
+    "tag3"
+  ], 
+  "author": "Package Author <someone@example.com>", 
+  "license": "MIT", 
+  "sources": [
+    "nyssa.bladelang.com"
+  ],
+  "deps": {
+    "dependecny1": "1.0.0",
+    "dependecny2": "1.0.0",
+    "dependecny3": "1.0.0"
+  },
+  "post_install": "post-install-script.b",
+  "pre_uninstall": "pre-uninstall-script.b"
+}
 ```
+
 
 

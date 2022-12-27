@@ -234,3 +234,13 @@ pre.has-icon .icon {
   text-align: inherit;
   margin-right: 0;
 }
+
+.notification.clean {
+  border-radius: 0;
+  padding: .5em;
+  text-align: center;
+}
+
+.title code {
+  font-size: 60%;
+}

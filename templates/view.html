@@ -18,14 +18,12 @@
   <div class="has-background-primary-light px-6 pb-5 divide navi">
     <include path="inc/search-bar.html" />
   </div>
+  <div class="notification is-warning is-small clean" ny-if="package.deleted_at">This package or version is archived.</div>
   
   <section class="py-6">
     <div class="container">
       <div class="columns">
         <div class="column is-two-third pr-6">
-          <div class="has-text-centered" ny-not="package">
-            <em>Package "{name}" not found in this repository.</em>
-          </div>
           <div class="content" ny-if="package">
             <div class="title mb-2">{package.name}</div>
             <div>

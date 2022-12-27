@@ -20,4 +20,5 @@ var routes = {
   '/search': ['GET', views.search],
   '/view/{id}': ['GET', views.view],
   '/revert': ['POST', views.revert],
+  '/archive/{name}': ['GET', views.archive],
 }

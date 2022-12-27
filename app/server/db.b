@@ -129,6 +129,18 @@ def get_package(name, version) {
   return nil
 }
 
+def get_package_for_view(name, version) {
+  var res
+  if !version {
+    res = db.fetch('SELECT * FROM packages WHERE name = ? ORDER BY id DESC LIMIT 1;', [name])
+  } else {
+    res = db.fetch('SELECT * FROM packages WHERE name = ? and version = ? ORDER BY id DESC LIMIT 1;', [name, version])
+  }
+
+  if res return res[0]
+  return nil
+}
+
 def get_package_versions(name) {
   return db.fetch('SELECT id, version FROM packages WHERE name = ? and deleted_at IS NULL ORDER BY id DESC', [name])
 }
@@ -206,14 +218,23 @@ def get_packages_count() {
   return 0
 }
 
-def get_all_download_count() {
-  var res = db.fetch('SELECT SUM(downloads) as count FROM packages')
+def get_all_download_count(name) {
+  var res
+  if name {
+    res = db.fetch('SELECT SUM(downloads) as count FROM packages WHERE name = ?', [name])
+  } else {
+    res = db.fetch('SELECT SUM(downloads) as count FROM packages')
+  }
   if res return res[0].count or 0
   return 0
 }
 
 def revert_package(name, version) {
   return db.exec('UPDATE packages SET deleted_at=CURRENT_TIMESTAMP WHERE name = ? and id > ?;', [name, version])
+}
+
+def archive_package(name) {
+  return db.exec('UPDATE packages SET deleted_at=CURRENT_TIMESTAMP WHERE name = ?;', [name])
 }
 
 # SESSIONS
