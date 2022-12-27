@@ -102,25 +102,25 @@ def delete_publisher(name) {
 
 def get_publishers_count() {
   var res = db.fetch('SELECT COUNT(*) as count FROM publishers;')
-  if res return res[0].count
+  if res return res[0].count or 0
   return 0
 }
 
 # PACKAGES
 
 def get_packages() {
-  return db.fetch('SELECT * FROM packages;')
+  return db.fetch('SELECT * FROM packages WHERE deleted_at IS NULL;')
 }
 
 def get_top_packages(order) {
   if !order order = 'downloads'
-  return db.fetch("SELECT id, name, publisher, description, replace(created_at, '-', '/') as date_created FROM packages GROUP BY name ORDER BY ${order} LIMIT 4;")
+  return db.fetch("SELECT id, name, publisher, description, replace(created_at, '-', '/') as date_created FROM packages WHERE deleted_at IS NULL GROUP BY name ORDER BY ${order} LIMIT 4;")
 }
 
 def get_package(name, version) {
   var res
   if !version {
-    res = db.fetch('SELECT * FROM packages WHERE name = ? ORDER BY id DESC LIMIT 1;', [name])
+    res = db.fetch('SELECT * FROM packages WHERE name = ? and deleted_at IS NULL ORDER BY id DESC LIMIT 1;', [name])
   } else {
     res = db.fetch('SELECT * FROM packages WHERE name = ? and version = ? ORDER BY id DESC LIMIT 1;', [name, version])
   }
@@ -130,7 +130,7 @@ def get_package(name, version) {
 }
 
 def get_package_versions(name) {
-  return db.fetch('SELECT version FROM packages WHERE name = ? ORDER BY id DESC', [name])
+  return db.fetch('SELECT id, version FROM packages WHERE name = ? and deleted_at IS NULL ORDER BY id DESC', [name])
 }
 
 def search_package(query, page, order) {
@@ -140,11 +140,34 @@ def search_package(query, page, order) {
 
   var lower_limit = (page - 1) * per_page # 10 per page
 
-  var count = db.fetch('SELECT count(*) as count FROM (SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name);', {':query': query})
+  var count = db.fetch('SELECT count(*) as count FROM (SELECT * FROM packages WHERE (name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query) AND deleted_at IS NULL GROUP BY name);', {':query': query})
   if !count count = 0
   else count = count[0].count
 
-  var result = db.fetch('SELECT * FROM packages WHERE name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query GROUP BY name ORDER BY ${order} LIMIT ${lower_limit}, ${per_page};', {':query': query})
+  var result = db.fetch('SELECT * FROM (SELECT * FROM packages WHERE (name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query) AND deleted_at IS NULL ORDER BY id DESC) GROUP BY name ORDER BY ${order} LIMIT ${lower_limit}, ${per_page};', {':query': query})
+  var start = per_page * (page -1)
+
+  return {
+    packages: result,
+    page: page,
+    pages: math.ceil(count / per_page),
+    start: start,
+    end: start + result.length(),
+    total: count,
+  }
+}
+
+def get_user_packages(username, page) {
+  if !page page = 1
+  var per_page = setup.PACKAGES_PER_PAGE or 10
+
+  var lower_limit = (page - 1) * per_page # 10 per page
+
+  var count = db.fetch('SELECT count(*) as count FROM (SELECT * FROM packages WHERE publisher = :username GROUP BY name);', {':username': username})
+  if !count count = 0
+  else count = count[0].count
+
+  var result = db.fetch('SELECT * FROM (SELECT * FROM packages WHERE publisher = :username ORDER BY id DESC) GROUP BY name LIMIT ${lower_limit}, ${per_page};', {':username': username})
   var start = per_page * (page -1)
 
   return {
@@ -179,14 +202,18 @@ def update_package_download_count(name, version) {
 
 def get_packages_count() {
   var res = db.fetch('SELECT COUNT(*) as count FROM packages;')
-  if res return res[0].count
+  if res return res[0].count or 0
   return 0
 }
 
 def get_all_download_count() {
   var res = db.fetch('SELECT SUM(downloads) as count FROM packages')
-  if res return res[0].count
+  if res return res[0].count or 0
   return 0
+}
+
+def revert_package(name, version) {
+  return db.exec('UPDATE packages SET deleted_at=CURRENT_TIMESTAMP WHERE name = ? and id > ?;', [name, version])
 }
 
 # SESSIONS

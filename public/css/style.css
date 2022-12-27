@@ -229,3 +229,8 @@ pre.has-icon .icon {
 #copy-command.open::before, #copy-command.open::after {
   display: inline;
 }
+
+.field-label {
+  text-align: inherit;
+  margin-right: 0;
+}

@@ -40,6 +40,9 @@ var functions = {
   },
   draw: | t | {
     return drawdown.markdown(t)
+  },
+  can_revert: | versions | {
+    return versions.length() > 1
   }
 }
 

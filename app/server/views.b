@@ -84,6 +84,11 @@ def view(req, res) {
 }
 
 def authenticate(req, res) {
+  if res.session.contains('user') {
+    res.redirect('/account')
+    return
+  }
+
   if req.body and is_dict(req.body) {
     var name = req.body.get('username', nil),
       password = req.body.get('password', nil)
@@ -94,9 +99,6 @@ def authenticate(req, res) {
       # authenticate
       if pub and bcrypt.compare(password, pub.password) {
         res.session['user'] = pub
-
-        # login success. Redirect to account home
-        # TODO: Redirect to correct user homepage
         res.redirect('/account')
         return
       }
@@ -108,8 +110,6 @@ def authenticate(req, res) {
 
 def login(req, res) {
   if res.session.contains('user') {
-    # Redirect to account home
-    # TODO: Redirect to correct user homepage
     res.redirect('/account')
     return
   }
@@ -121,7 +121,62 @@ def login(req, res) {
 }
 
 def account(req, res) {
+  if !res.session.contains('user') {
+    res.redirect('/login')
+    return
+  }
+
+  var page = to_number(req.queries.get('page', '1'))
+  var result = db.get_user_packages(res.session['user'].username, page)
+  for pack in result.packages {
+    pack.tags = json.decode(pack.tags)
+    pack.versions = db.get_package_versions(pack.name)
+  }
+
+  var pg = 1..(result.pages + 1)
+  if result.pages > 11 and page >= 6 {
+    var start = page - 5, end = page + 5 + 1
+    if end > result.pages end = result.pages
+    pg = start..end
+  }
+
+  var pagination = []
+  for x in pg {
+    if x == page pagination.append({page: x, active: true})
+    else pagination.append({page: x, active: false})
+  }
+
   res.write(template('account', {
+    result: result,
+    pages: pagination,
     show_login: false,
+    user: res.session['user'],
+    message: res.session.remove('message')
   }))
+}
+
+def revert(req, res) {
+  if !res.session.contains('user') {
+    res.redirect('/login')
+    return
+  }
+  
+  if req.body and is_dict(req.body) {
+    var name = req.body.get('name', nil),
+      version = req.body.get('version', nil)
+
+    if name and version {
+      var package = db.get_package(name, version)
+      if package {
+        if db.revert_package(name, package.id) {
+          # create flash message
+          res.session['message'] = 'Package <strong>${name}</strong> successfully reverted to version <strong>${version}</strong>'
+        }
+        res.redirect('/account')
+        return
+      }
+    }
+  }
+
+  res.redirect('/login')
 }

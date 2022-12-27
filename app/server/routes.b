@@ -19,4 +19,5 @@ var routes = {
   '/account': ['GET', views.account],
   '/search': ['GET', views.search],
   '/view/{id}': ['GET', views.view],
+  '/revert': ['POST', views.revert],
 }

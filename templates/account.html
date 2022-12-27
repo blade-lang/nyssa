@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nyssa Package Manager</title>
+  <title>@{user.username} - Nyssa Package Manager</title>
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
   <link rel="stylesheet" href="static/css/style.css">
@@ -16,13 +16,119 @@
 <body class="has-head-color no-foot-color">
   <include path="inc/header.html" />
 
-  <section class="container">
+  <section class="container py-6">
     <div class="columns is-justify-content-center">
-      <div class="column is-one-quarter">Sidebar</div>
-      <div class="column is-three-quarter">My Account</div>
+      <div class="column is-one-quarter">
+        <article class="message is-info">
+          <div class="message-header">
+            <p>About: Revert to version</p>
+          </div>
+          <div class="message-body">
+            When you revert a package to another version, all versions higher than that version will 
+            become unavailable in search results and that version will be the default for new installations, 
+            but users who have installed them or wrote applications depending on them will still be able 
+            to download it.<br/><br/>
+            However, this means you won't be able to upload new versions of the application to replace the 
+            reverted versions.
+          </div>
+        </article>
+      </div>
+      <div class="column is-three-quarters pl-6">
+        <div class="title">My Packages</div>
+        <div class="notification is-primary" ny-if="message">
+          <button class="delete"></button>
+          {message}
+        </div>
+        <div class="mb-4" ny-if="result.packages">
+          Showing result {result.start|plus_one} to {result.end} of {result.total} (page {result.page} of {result.pages})
+        </div>
+        <div class="search-result">
+          <div class="search-item" ny-for="result.packages" ny-key="package">
+            <div class="title">
+              <a href="/view/{package.name}">{package.name}</a>
+            </div>
+            <div class="subtitle">
+              <a href="/search?q={package.publisher}">@{package.publisher}</a> published <span>{package.version}</span> at <span>{package.created_at}</span> with <span>{package.downloads|format_number}</span> downloads
+            </div>
+            <div class="content">
+              <div class="tags mb-2">
+                <a href="/search?q={v.version}" class="tag is-light" ny-for="package.versions" ny-key="v">v{v.version}</a>
+              </div>
+              <div>
+                <span ny-if="package.description">
+                  {package.description|strip_line}
+                </span>
+                <em ny-not="package.description">No description.</em>
+              </div>
+              <div class="tags mt-4" ny-if="package.tags">
+                <a href="/search?q={tag}" class="tag is-light" ny-for="package.tags" ny-key="tag">{tag}</a>
+              </div>
+              <div class="mt-2" ny-if="package.versions|can_revert">
+                <form class="revert-form field is-horizontal" method="post" action="/revert">
+                  <input type="hidden" name="name" value="{package.name}" />
+                  <div class="field-label is-small">
+                    <label class="label">Revert to version:</label>
+                  </div>
+                  <div class="field-body is-narrow">
+                    <div class="field has-addons">
+                      <div class="control">
+                        <div class="select is-small">
+                          <select name="version" class="input">
+                            <option value="{v.version}" ny-for="package.versions" ny-key="v">{v.version}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="control">
+                        <button class="button is-warning is-small">Revert</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="has-text-centered" ny-not="result.packages">
+            No package found matching the term "{query}"
+          </div>
+        </div>
+        <nav class="pagination mt-6" role="navigation" aria-label="pagination" ny-if="result.packages">
+          <ul class="pagination-list">
+            <li ny-for="pages" ny-key="p">
+              <a ny-if="p.active" class="pagination-link is-current" aria-label="Goto page {p.page}">{p.page}</a>
+              <a ny-not="p.active" href="/search?q={query}&page={p.page}" class="pagination-link" aria-label="Goto page {p.page}">{p.page}</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </section>
 
   <include path="inc/footer.html" />
+
+  <script>
+    function revertFormSubmit(event) {
+      event.preventDefault();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('form.revert-form').forEach(function(el) {
+        el.addEventListener('submit', function(e) {
+          e.preventDefault()
+          e.stopPropagation()
+
+          if(confirm('Are you sure you want to revert the package "' +el.name.value+ '" to version "' +el.version.value+ '"')) {
+            el.submit()
+          }
+        })
+      })
+
+      var ex = document.querySelector('.notification .delete')
+      if(ex) {
+        ex.addEventListener('click', function() {
+          var el = document.querySelector('.notification')
+          el.parentElement.removeChild(el)
+        })
+      }
+    })
+  </script>
 </body>
 </html>
