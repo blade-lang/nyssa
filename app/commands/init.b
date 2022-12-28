@@ -159,7 +159,7 @@ def run(value, options, success, error) {
   var index_test_file = file(index)
   if !index_test_file.exists() or index_test_file.read().trim().length() == 0 {
     log.info('Finalizing package initialization')
-    file(index, 'w+').write('import .app')
+    file(index, 'w+').write('import .app { * }')
   }
 
   success('Package ${config.name} created!')
