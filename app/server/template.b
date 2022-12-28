@@ -43,6 +43,17 @@ var functions = {
   },
   can_revert: | versions | {
     return versions.length() > 1
+  },
+  no_ext: | t | {
+    return t.split('.')[0]
+  },
+  file_title: | t | {
+    /* return ' '.join(iters.map(t.split('.')[0].split('-'), | x | {
+      if x.length() > 1 return x[0].upper() + x[1,].lower()
+      return x.lower()
+    })) */
+    var x = t.split('.')[0].replace('-', ' ')
+    return x[0].upper() + x[1,]
   }
 }
 

@@ -10,6 +10,14 @@
   <section class="container py-6">
     <div class="columns is-justify-content-center">
       <div class="column is-one-quarter">
+        <aside class="menu">
+          <p class="menu-label">
+            Docs
+          </p>
+          <ul class="menu-list">
+            <li ny-for="doc_files" ny-key="f"><a href="/docs/{f|no_ext}">{f|file_title}</a></li>
+          </ul>
+        </aside>
       </div>
       <div class="column is-three-quarters pl-6">
       </div>

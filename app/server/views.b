@@ -6,6 +6,18 @@ import .db
 import .util
 import ..setup
 
+var doc_files = [
+  'installing-nyssa.md',
+  'creating-packages.md',
+  'publishing-packages.md',
+  'managing-dependencies.md',
+  'package-layout.md',
+  'install-uninstall-actions.md',
+  'hosting-a-private-repository.md',
+  'working-with-private-repositories.md',
+  'commands.md'
+]
+
 def error_page(req, res) {
   res.write(template('404'))
 }
@@ -212,8 +224,13 @@ def logout(req, res) {
 }
 
 def doc(req, res) {
-  var uri = req.path.replace('~^/docs/?~', '')
+  var uri = req.path.replace('~^/docs/?~', '').trim()
+  if uri == '' uri = '/index'
+
+  echo doc_files
+
   res.write(template('doc', {
+    doc_files: doc_files,
     show_login: !res.session.contains('user'),
   }))
 }
