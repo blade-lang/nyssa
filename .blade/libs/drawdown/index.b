@@ -134,74 +134,79 @@ def markdown(src) {
     return str.replace(rx_escape, '$1')
   }
 
-  var stash = {}
-  var si = 0
+  try {
+    var stash = {}
+    var si = 0
 
-  src = '\n' + src + '\n'
+    src = '\n' + src + '\n'
 
-  src = src.replace(rx_lt, '&lt;')
-  src = src.replace(rx_gt, '&gt;')
-  replace(rx_space, '  ')
+    src = src.replace(rx_lt, '&lt;')
+    src = src.replace(rx_gt, '&gt;')
+    replace(rx_space, '  ')
 
-  # blockquote
-  src = blockquote(src)
+    # blockquote
+    src = blockquote(src)
 
-  # horizontal rule
-  src = src.replace(rx_hr, '<hr/>')
+    # horizontal rule
+    src = src.replace(rx_hr, '<hr/>')
 
-  # list
-  src = list(src)
-  replace(rx_listjoin, '')
+    # list
+    src = list(src)
+    replace(rx_listjoin, '')
 
-  # code
-  replace(rx_code, |all, p1, p2, p3, p4, _, _1, _2| {
-    stash[si--] = element('pre', element('code', (p3 or p4).replace('/^    /', '')))
-    return si + '\uf8ff'
-  })
+    # code
+    replace(rx_code, |all, p1, p2, p3, p4, _, _1, _2| {
+      stash[si--] = element('pre', element('code', (p3 or p4).replace('/^    /', '')))
+      return si + '\uf8ff'
+    })
 
-  # link or image
-  replace(rx_link, |all, p1, p2, p3, p4, p5, p6| {
-    stash[si--] = p4 ? (p2 ? 
-      '<img src="' + p4 + '" alt="' + p3 + '"/>' : 
-      '<a href="' + p4 + '">' + unesc(highlight(p3)) + '</a>') : 
-      p6
-    return si + '\uf8ff'
-  });
+    # link or image
+    replace(rx_link, |all, p1, p2, p3, p4, p5, p6| {
+      stash[si--] = p4 ? (p2 ? 
+        '<img src="' + p4 + '" alt="' + p3 + '"/>' : 
+        '<a href="' + p4 + '">' + unesc(highlight(p3)) + '</a>') : 
+        p6
+      return si + '\uf8ff'
+    });
 
-  # table
-  replace(rx_table, |all, table, _, _1| {
-    var sep = table.match(rx_thead)[1]
-    return '\n' + element('table',
-      draw_replace(table, rx_row, |row, ri| {
-        return row == sep ? '' : element('tr', draw_replace(row, rx_cell, |all, cell, ci| {
-          return ci > 0 ? element(sep and ri == 0 ? 'th' : 'td', unesc(highlight(cell or ''))) : '|'
-        }))
-      })
-    )
-  })
-  # table fix
-  src = src.replace('<tr>|<td>', '<tr><td>', false)
-  src = src.replace('<tr>|<th>', '<tr><th>', false)
+    # table
+    replace(rx_table, |all, table, _, _1| {
+      var sep = table.match(rx_thead)[1]
+      return '\n' + element('table',
+        draw_replace(table, rx_row, |row, ri| {
+          return row == sep ? '' : element('tr', draw_replace(row, rx_cell, |all, cell, ci| {
+            return ci > 0 ? element(sep and ri == 0 ? 'th' : 'td', unesc(highlight(cell or ''))) : '|'
+          }))
+        })
+      )
+    })
+    # table fix
+    src = src.replace('<tr>|<td>', '<tr><td>', false)
+    src = src.replace('<tr>|<th>', '<tr><th>', false)
 
-  # heading
-  replace(rx_heading, |all, _, p1, p2, _2| {
-    return _ + element('h' + p1.length(), unesc(highlight(p2))) 
-  })
+    # heading
+    replace(rx_heading, |all, _, p1, p2, _2| {
+      return _ + element('h' + p1.length(), unesc(highlight(p2))) 
+    })
 
-  # paragraph
-  replace(rx_para, |all, content, _| {
-    return element('p', unesc(highlight(content))) 
-  })
+    # paragraph
+    replace(rx_para, |all, content, _| {
+      return element('p', unesc(highlight(content))) 
+    })
 
-  # stash
-  replace(rx_stash, |all, _| {  
-    # echo (all)
-    return stash[to_int(to_number(all))] 
-  })
+    # stash
+    replace(rx_stash, |all, _| {  
+      # echo (all)
+      return stash[to_int(to_number(all))] 
+    })
 
-  # autolinks
-  src = src.replace(rx_weblink, '<a href="$0" target="_blank">$0</a>')
-  src = src.replace(rx_email, '<a href="mailto:$0">$0</a>')
+    # autolinks
+    src = src.replace(rx_weblink, '<a href="$0" target="_blank">$0</a>')
+    src = src.replace(rx_email, '<a href="mailto:$0">$0</a>')
 
-  return src.trim()
+    return src.trim()
+  } catch Exception e {
+    echo 'Error occured: ${e.message}'
+    return src.trim()
+  }
 }

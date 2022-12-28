@@ -48,12 +48,11 @@ var functions = {
     return t.split('.')[0]
   },
   file_title: | t | {
-    /* return ' '.join(iters.map(t.split('.')[0].split('-'), | x | {
-      if x.length() > 1 return x[0].upper() + x[1,].lower()
-      return x.lower()
-    })) */
     var x = t.split('.')[0].replace('-', ' ')
     return x[0].upper() + x[1,]
+  },
+  eq: |t, v| {
+    return t == v
   }
 }
 
@@ -102,8 +101,13 @@ def extract_var(variables, _var) {
 
       if var_split.length() > 1 {
         iter var i = 1; i < var_split.length(); i++ {
-          if functions.contains(var_split[i]) {
-            real_var = functions[var_split[i]](real_var)
+          var fn = var_split[i].split('=')
+          if functions.contains(fn[0]) {
+            if fn.length() == 1 {
+              real_var = functions[fn[0]](real_var)
+            } else {
+              real_var = functions[fn[0]](real_var, extract_var(variables, fn[1]))
+            }
           }
         }
       }
@@ -120,7 +124,7 @@ def replace_vars(content, variables) {
   # 
   # NOTE: This must come last as previous actions could generate or 
   # contain variables as well.
-  var var_vars = content.matches('~(?<![{])\{(?P<variable>([a-zA-Z_][a-zA-Z0-9_|]*(\.[a-zA-Z0-9_|]+)*))\}~')
+  var var_vars = content.matches('~(?<![{])\{(?P<variable>([a-zA-Z_][a-zA-Z0-9_\-|=]*(\.[a-zA-Z0-9_\-|=]+)*))\}~')
   if var_vars {
     # var_vars = json.decode(json.encode(var_vars))
     for _var in var_vars.variable {

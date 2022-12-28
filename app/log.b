@@ -4,14 +4,19 @@ import os
 import .setup
 
 var logs_dir = os.join_paths(os.args[1], setup.LOGS_DIR)
-if !os.dir_exists(logs_dir)
-  os.create_dir(logs_dir)
 
-var time = date.localtime()
-var _logfile = file(
-  '${logs_dir}/${time.year}-${to_string(time.month).lpad(2,'0')}-${to_string(time.day).lpad(2,'0')}.log',
-  'w+'
-)
+var _logfile
+def init() {
+  if !os.dir_exists(logs_dir)
+    os.create_dir(logs_dir)
+    
+  var time = date.localtime()
+  _logfile = file(
+    '${logs_dir}/${time.year}-${to_string(time.month).lpad(2,'0')}-${to_string(time.day).lpad(2,'0')}.log',
+    'w+'
+  )
+}
+init()
 
 def _write(type, mes, no_console) {
   var time = date.localtime()

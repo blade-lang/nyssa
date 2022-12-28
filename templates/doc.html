@@ -15,7 +15,10 @@
             Docs
           </p>
           <ul class="menu-list">
-            <li ny-for="doc_files" ny-key="f"><a href="/docs/{f|no_ext}">{f|file_title}</a></li>
+            <li ny-for="doc_files" ny-key="f">
+              <a class="is-active" ny-if="f|no_ext|eq=uri" href="/docs/{f|no_ext}">{f|file_title}</a>
+              <a ny-not="f|no_ext|eq=uri" href="/docs/{f|no_ext}">{f|file_title}</a>
+            </li>
           </ul>
         </aside>
       </div>

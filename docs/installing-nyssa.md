@@ -18,9 +18,16 @@ Here's a few links for different operating systems showing how to do this.
 
 ### Testing your installation
 
-If you followed all the steps and successfully added the download directory to system path, open a new terminal session (may be required) and run the command `nyssa`.
+If you followed all the steps and successfully added the download directory to system path, open a new terminal session (may be required) and run the command `nyssa --version`.
 
 You should see an output similar to the below.
+
+```
+Nyssa 0.1.0
+Blade 0.0.75 (running on BladeVM 0.0.8)
+```
+
+You can also run the `nyssa` command without any arguments to see the full help information.
 
 ```
 Usage: nyssa [ [-h] | [-v] ] [COMMAND]

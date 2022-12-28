@@ -290,3 +290,16 @@ pre.has-icon .icon {
   margin: 1em 0;
 }
 
+.menu-list a.is-active {
+  background-color: #10907c;
+}
+
+@media (max-width: 60em) {
+  .navbar-menu {
+    display: block;
+    background-color: #ebfffc!important;
+  }
+  .hero .buttons {
+    bottom: -5em;
+  }
+}

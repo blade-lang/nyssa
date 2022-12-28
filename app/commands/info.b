@@ -29,7 +29,7 @@ def green(t) {
 }
 
 def title(t) {
-  return green(bold(t)) + '\n' + green('-' * t.length())
+  return green(bold(t)) + '\n' + green('~' * t.length())
 }
 
 def info(n, m) {
@@ -74,7 +74,7 @@ def run(value, options, success, error) {
         echo empty()
       }
       echo ''
-      echo title('PRIVATE SOURCES')
+      echo title('SOURCES')
       if config.sources {
         for source in config.sources {
           echo info(source)

@@ -36,12 +36,14 @@ def run(value, options, success, error) {
   if !is_logs and !is_all and !is_cache is_all = true
 
   if is_logs or is_all {
-    log.info('Cleaning logs...')
+    log.info('Cleaning logs...', true)
     os.remove_dir(os.join_paths(os.args[1], setup.LOGS_DIR), true)
+    log.init()
   }
   if is_cache or is_all {
-    log.info('Cleaning cache...')
+    log.info('Cleaning cache...', true)
     os.remove_dir(os.join_paths(os.args[1], setup.CACHE_DIR), true)
+    os.create_dir(os.join_paths(os.args[1], setup.CACHE_DIR))
   }
 
   var cleaned = (is_logs and is_cache) or is_all ? (
