@@ -1,6 +1,7 @@
 # FROTEND WEB PAGES
 import json
 import bcrypt
+import os
 import .template
 import .db
 import .util
@@ -8,15 +9,18 @@ import ..setup
 
 var doc_files = [
   'installing-nyssa.md',
-  'creating-packages.md',
+  'creating-projects.md',
   'publishing-packages.md',
   'managing-dependencies.md',
   'package-layout.md',
-  'install-uninstall-actions.md',
+  'install-and-uninstall-actions.md',
   'hosting-a-private-repository.md',
   'working-with-private-repositories.md',
+  'publisher-accounts.md',
   'commands.md'
 ]
+
+var docs_dir = os.join_paths(os.args[1], setup.DOCS_DIR)
 
 def error_page(req, res) {
   res.write(template('404'))
@@ -224,12 +228,20 @@ def logout(req, res) {
 }
 
 def doc(req, res) {
-  var uri = req.path.replace('~^/docs/?~', '').trim()
-  if uri == '' uri = '/index'
-
-  echo doc_files
+  var uri = req.path.replace('~^/docs/?~', '').trim('/')
+  if uri == '' uri = 'installing-nyssa'
+  
+  var doc_file
+  if !doc_files.contains('${uri}.md') or 
+    !os.dir_exists(docs_dir) or
+    !file(doc_file = os.join_paths(docs_dir, '${uri}.md')).exists() {
+    res.redirect('/404')
+    return
+  }
 
   res.write(template('doc', {
+    uri: uri,
+    content: file(doc_file).read(),
     doc_files: doc_files,
     show_login: !res.session.contains('user'),
   }))

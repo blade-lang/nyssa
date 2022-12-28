@@ -1,4 +1,4 @@
-# Nyssa Package Layout
+# Package layout
 
 This document describes the technical details of a Nyssa package.
 
@@ -11,7 +11,7 @@ follows:
   installed packages and will only be available when at least one 
   or more package is installed.
 - `app`: The directory contains the main application/package code.
-- `examples`: Examples accompanying your package goes here and will
+- `examples`: Examples accompanying your package goes here and _may_
   be shown to users under the `Examples` section of the Nyssa website.
 - `index.b`: The default Blade package index file.
 - `README.md`: The README.md file will be contain the main documentation 
@@ -19,7 +19,7 @@ follows:
   > **NOTE:**
   > If your packages adheres to Blade standard multiline comment 
   > documentation format as shown in the Blade standard library 
-  > dcumentation, your package documentation will be expanded to include
+  > documentation, your package documentation _may_ be expanded to include
   > such documentations.
 - `nyssa.json`: The Nyssa package configuration script.
 - `tests`: This directory contains unit, integration and all types 
