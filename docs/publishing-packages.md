@@ -30,7 +30,7 @@ When introducing a breaking change to a package, it's recommended that you incre
 
 ### Publishing to a repository
 
-Before you can publish an application, you must have created and be logged in to a publisher account. See [this guide](/docs/publisher-accounts) on how to do that.
+Before you can publish an application, you must have created and be logged in to a publisher account. See [this guide](/docs/publishers-account) on how to do that.
 
 Once you are logged in to your publisher account, simply run the command `nyssa publish` from the root of your package and nyssa will take care of the rest.
 

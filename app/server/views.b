@@ -16,7 +16,7 @@ var doc_files = [
   'install-and-uninstall-actions.md',
   'hosting-a-private-repository.md',
   'working-with-private-repositories.md',
-  'publisher-accounts.md',
+  'publishers-account.md',
   'commands.md'
 ]
 
