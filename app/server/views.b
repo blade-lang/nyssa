@@ -210,3 +210,8 @@ def logout(req, res) {
   res.clear_session()
   res.redirect('/')
 }
+
+def doc(req, res) {
+  var uri = req.path.replace('~^/docs/?~', '')
+  res.write(template('doc'))
+}
