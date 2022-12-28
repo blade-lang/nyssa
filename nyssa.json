@@ -11,7 +11,7 @@
   "author": "Richard Ore <eqliqandfriends@gmail.com>", 
   "license": "MIT", 
   "sources": [
-    "nyssa.bladelang.com"
+    "https://nyssa.bladelang.com"
   ],
   "deps": {}
 }
