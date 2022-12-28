@@ -244,3 +244,23 @@ pre.has-icon .icon {
 .title code {
   font-size: 60%;
 }
+
+.is-relative {
+  position: relative;
+}
+
+.is-absolute {
+  position: absolute;
+}
+
+.hero .buttons {
+  bottom: -2em;
+  display: block;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.hero .buttons .button .icon-text span {
+  line-height: 1.5;
+}
