@@ -48,11 +48,11 @@ cd sample
 ```
 
 - Create a new nyssa application in the directory by running `nyssa init`.
-- Run the command `nyssa install my_package`.
+- Run the command `nyssa install <package_name>`.
 - Open the file at `app/index.b` and insert code to import your package before every code in the file. E.g.
 
 ```
-import my_package
+import <package_name>
 echo 'Welcome to Nyssa. Magic begins here!'
 ```
 

@@ -180,16 +180,21 @@ def run(value, options, success, error) {
   var repo = options.get('repo', setup.DEFAULT_REPOSITORY),
       is_global = options.get('global', false),
       with_cache = options.get('use-cache', false),
-      progress = {}
+      progress = {},
+      config_exists = file(config_file).exists()
 
-  if !file(config_file).exists() 
+  if !config_exists and !is_global
     error('Not in a Nyssa project')
   
-  var config = json.decode(file(config_file).read())
-  if !is_dict(config) or !config.get('name', nil) or !config.get('version', nil)
-    error('Not in a Nyssa project')
-
-  config = Config.from_dict(config)
+  var config
+  if !config_exists and is_global {
+    config = Config()
+  } else {
+    config = json.decode(file(config_file).read())
+    if !is_dict(config) or !config.get('name', nil) or !config.get('version', nil)
+      error('Not in a Nyssa project')
+    config = Config.from_dict(config)
+  }
 
   var ns = value.split('@'),
       name = ns[0],
@@ -220,7 +225,9 @@ def run(value, options, success, error) {
         config.sources.append(repo)
       }
 
-      file(config_file, 'w').write(json.encode(config, false))
+      if config_exists {
+        file(config_file, 'w').write(json.encode(config, false))
+      }
     }
   } catch Exception e {
     echo colors.text(

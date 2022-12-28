@@ -7,6 +7,7 @@ import ..config { Config }
 
 var blade_exe = os.args[0]
 var libs_dir = os.join_paths(os.cwd(), '.blade/libs')
+var global_dir = os.join_paths(os.dir_name(os.args[0]), 'vendor')
 
 def parse(parser) {
   parser.add_command(
@@ -27,18 +28,25 @@ def parse(parser) {
 def run(value, options, success, error) {
   var is_global = options.get('global', false)
   var package_not_installed = 'package ${value} not installed.'
+  var wrk_dir = is_global ? global_dir : libs_dir
 
-  if os.dir_exists(libs_dir) {
-    var package_dir = os.join_paths(libs_dir, value),
+  if os.dir_exists(wrk_dir) {
+    var package_dir = os.join_paths(wrk_dir, value),
         package_config_file = os.join_paths(package_dir, setup.CONFIG_FILE),
-        this_config_file = os.join_paths(os.cwd(), setup.CONFIG_FILE)
+        this_config_file = os.join_paths(os.cwd(), setup.CONFIG_FILE),
+        this_config_exists = file(this_config_file).exists()
 
-    if !file(this_config_file).exists()
+    if !file(this_config_file).exists() and !is_global
       error('Not in a Nyssa package.')
 
-    var this_config = Config.from_dict(json.decode(file(this_config_file).read()))
-    if !this_config.name or !this_config.version
-      error('Not in a Nyssa package.')
+    var this_config
+    if !this_config_exists and is_global {
+      this_config = Config()
+    } else {
+      this_config = Config.from_dict(json.decode(file(this_config_file).read()))
+      if !this_config.name or !this_config.version
+        error('Not in a Nyssa package.')
+    }
 
     if os.dir_exists(package_dir) {
       try {
@@ -70,7 +78,9 @@ def run(value, options, success, error) {
         if this_config.deps and this_config.deps.contains(value)
           this_config.deps.remove(value)
 
-        file(this_config_file, 'w').write(json.encode(this_config, false))
+        if this_config_exists {
+          file(this_config_file, 'w').write(json.encode(this_config, false))
+        }
 
         success('${value} uninstalled successfully!')
       } catch Exception e {

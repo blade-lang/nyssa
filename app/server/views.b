@@ -14,8 +14,8 @@ var doc_files = [
   'managing-dependencies.md',
   'package-layout.md',
   'install-and-uninstall-actions.md',
+  'getting-package-info.md',
   'hosting-a-private-repository.md',
-  'working-with-private-repositories.md',
   'publishers-account.md',
   'commands.md'
 ]
