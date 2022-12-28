@@ -213,5 +213,7 @@ def logout(req, res) {
 
 def doc(req, res) {
   var uri = req.path.replace('~^/docs/?~', '')
-  res.write(template('doc'))
+  res.write(template('doc', {
+    show_login: !res.session.contains('user'),
+  }))
 }
