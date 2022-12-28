@@ -10,6 +10,7 @@ def _error(s, req, res) {
 }
 
 def not_found(req, res) {
+  res.status = 404
   res.write(template('404', {
     show_login: !res.session.contains('user')
   }))
