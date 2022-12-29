@@ -255,7 +255,7 @@ pre.has-icon .icon {
 
 .hero .buttons {
   bottom: -2em;
-  display: block;
+  display: flex;
   width: 100%;
   left: 0;
   right: 0;
@@ -300,6 +300,40 @@ pre.has-icon .icon {
     background-color: #ebfffc!important;
   }
   .hero .buttons {
-    bottom: -5em;
+    justify-content: center;
+  }
+  .px-12 {
+    padding-left: 1.5em !important;
+    padding-right: 1.5em !important;
+  }
+  .px-6 {
+    padding-left: 1em !important;
+    padding-right: 1em !important;
+  }
+  .px-12 .px-6 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .stats .media+.media {
+    padding-top: 2em;
+  }
+  .tile.is-child {
+    margin-left: 0.25em !important;
+    margin-right: 0.25em !important;
+  }
+  .f-logo, .navbar-end {
+    display: none;
+  }
+  .navbar-menu {
+    box-shadow: none;
+  }
+  .navbar-item {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 43em) {
+  .hero .buttons {
+    bottom: -4em;
   }
 }

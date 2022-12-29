@@ -8,6 +8,23 @@
         <a class="navbar-item" href="/docs">
           Getting Started
         </a>
+        <a class="navbar-item is-mobile" href="/login" ny-if="show_login">Login</a>
+        <a class="navbar-item is-link  is-mobile" href="/account" ny-not="show_login">
+          <span class="icon-text">
+            <span class="icon">
+              <i class="fas fa-user"></i>
+            </span>
+            <span>My Account</span>
+          </span>
+        </a>
+        <a class="navbar-item is-dark is-mobile" href="https://github.com/blade-lang/nyssa" target="_blank">
+          <span class="icon-text">
+            <span class="icon">
+              <i class="fa-brands fa-github"></i>
+            </span>
+            <span>Github</span>
+          </span>
+        </a>
       </div>
 
       <div class="navbar-end">
