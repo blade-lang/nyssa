@@ -330,10 +330,18 @@ pre.has-icon .icon {
   .navbar-item {
     display: inline-flex;
   }
+
+  .is-mobile {
+    display: none !important;
+  }
 }
 
 @media (max-width: 43em) {
   .hero .buttons {
     bottom: -4em;
+  }
+
+  .is-mobile {
+    display: none !important;
   }
 }
