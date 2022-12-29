@@ -337,7 +337,7 @@ pre.has-icon .icon {
   }
 
   .is-mobile {
-    display: block;
+    display: inline-flex !important;
   }
 }
 
@@ -348,6 +348,6 @@ pre.has-icon .icon {
   }
 
   .is-mobile {
-    display: block;
+    display:  inline-flex !important;
   }
 }
