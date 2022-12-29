@@ -255,7 +255,7 @@ pre.has-icon .icon {
 
 .hero .buttons {
   bottom: -2em;
-  display: flex;
+  display: block;
   width: 100%;
   left: 0;
   right: 0;
@@ -294,12 +294,17 @@ pre.has-icon .icon {
   background-color: #10907c;
 }
 
+.is-mobile {
+  display: none !important;
+}
+
 @media (max-width: 60em) {
   .navbar-menu {
     display: block;
     background-color: #ebfffc!important;
   }
   .hero .buttons {
+    display: flex;
     justify-content: center;
   }
   .px-12 {
@@ -332,16 +337,17 @@ pre.has-icon .icon {
   }
 
   .is-mobile {
-    display: none !important;
+    display: block;
   }
 }
 
 @media (max-width: 43em) {
   .hero .buttons {
+    display: flex;
     bottom: -4em;
   }
 
   .is-mobile {
-    display: none !important;
+    display: block;
   }
 }
