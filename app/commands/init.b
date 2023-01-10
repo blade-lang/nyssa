@@ -128,11 +128,11 @@ def run(value, options, success, error) {
       '### Package Information\n' + 
       '\n' + 
       '- **Name:** ${config.name}\n' +
-      '- **Version:**: ${config.version}\n' +
-      '- **Homepage:**: ${config.homepage or "_Homepage goes here._"}\n' +
-      '- **Tags:**: ${", ".join(config.tags) or "_Tags goes here._"}\n' +
-      '- **Author:**: ${config.author or "_Author info goes here._"}\n' +
-      '- **License:**: ${config.license or "_License name or link goes here._"}\n' +
+      '- **Version:** ${config.version}\n' +
+      '- **Homepage:** ${config.homepage or "_Homepage goes here._"}\n' +
+      '- **Tags:** ${", ".join(config.tags) or "_Tags goes here._"}\n' +
+      '- **Author:** ${config.author or "_Author info goes here._"}\n' +
+      '- **License:** ${config.license or "_License name or link goes here._"}\n' +
       '\n'
     )
   } else {
