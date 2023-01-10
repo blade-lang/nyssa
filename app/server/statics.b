@@ -13,7 +13,7 @@ if !os.dir_exists(static_files_directory)
 
 def static_handler(req, res) {
   var static_path = req.path.replace('/^\\/static\\//', '')
-  var reader = file(os.join_paths(static_files_directory, static_path))
+  var reader = file(os.join_paths(static_files_directory, static_path), 'rb')
   
   if reader.exists() {
     res.headers['Content-Type'] = mime.detect_from_name(static_path)
