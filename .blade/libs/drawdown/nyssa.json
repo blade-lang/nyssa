@@ -1,0 +1,17 @@
+{
+  "name": "drawdown", 
+  "version": "1.0.1", 
+  "description": "A Markdown to HTML converter.", 
+  "homepage": "https://github.com/mcfriend99/drawdown", 
+  "tags": [
+    "markdown", 
+    "html", 
+    "converter"
+  ], 
+  "author": "Richard Ore <eqliqandfriends@gmail.com>", 
+  "license": "ISC", 
+  "sources": [
+    "https://nyssa.bladelang.com"
+  ], 
+  "deps": {}
+}

@@ -12,6 +12,8 @@
   "license": "MIT", 
   "sources": [
     "https://nyssa.bladelang.com"
-  ],
-  "deps": {}
+  ], 
+  "deps": {
+    "drawdown": "1.0.1"
+  }
 }
