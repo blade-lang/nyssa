@@ -39,7 +39,13 @@ var functions = {
     return t.replace('\n', '<br>')
   },
   draw: | t | {
-    return drawdown.markdown(t)
+    try {
+      return drawdown.markdown(t)
+    } catch Exception e {
+      log.error(e.message)
+      log.error(e.stacktrace)
+      return t
+    }
   },
   can_revert: | versions | {
     return versions.length() > 1
