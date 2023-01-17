@@ -6,7 +6,8 @@
   "tags": [
     "nyssa", 
     "blade", 
-    "package-manager"
+    "package-manager",
+    "tools"
   ], 
   "author": "Richard Ore <eqliqandfriends@gmail.com>", 
   "license": "MIT", 
