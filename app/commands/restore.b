@@ -51,6 +51,21 @@ def configure(config, repo, full_name, name, version, path, progress, no_cache, 
     var package_config_file = os.join_paths(destination, setup.CONFIG_FILE)
     var package_config = Config.from_dict(json.decode(file(package_config_file).read()))
 
+    # restore dependencies before running post-install in case post-install
+    # depends on a dependency.
+    if package_config.deps {
+      echo ''
+      log.info('Fetching dependencies for ${full_name}...')
+      echo '--------------------------${"-" * full_name.length()}---'
+
+      for dep, ver in package_config.deps {
+        var dep_full_name = ver ? '${dep}@${ver}' : dep
+        if !progress.contains(dep) {
+          install(config, repo, dep_full_name, dep, ver, progress, no_cache, error)
+        }
+      }
+    }
+
     # run post install script if it exists
     if package_config.post_install {
       log.info('Running post install for ${full_name}')
@@ -65,19 +80,6 @@ def configure(config, repo, full_name, name, version, path, progress, no_cache, 
 
       # return to current directory
       os.change_dir(this_dir)
-    }
-
-    if package_config.deps {
-      echo ''
-      log.info('Fetching dependencies for ${full_name}...')
-      echo '--------------------------${"-" * full_name.length()}---'
-
-      for dep, ver in package_config.deps {
-        var dep_full_name = ver ? '${dep}@${ver}' : dep
-        if !progress.contains(dep) {
-          install(config, repo, dep_full_name, dep, ver, progress, no_cache, error)
-        }
-      }
     }
 
     return true

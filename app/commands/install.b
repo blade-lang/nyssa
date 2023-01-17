@@ -85,6 +85,21 @@ def configure(config, repo, full_name, name, version, path, is_global, with_cach
     var package_config_file = os.join_paths(destination, setup.CONFIG_FILE)
     var package_config = Config.from_dict(json.decode(file(package_config_file).read()))
 
+    # install dependencies before running post-install in case post-install
+    # depends on a dependency.
+    if package_config.deps {
+      echo ''
+      log.info('Fetching dependencies for ${full_name}...')
+      echo '--------------------------${"-" * full_name.length()}---'
+
+      for dep, ver in package_config.deps {
+        var dep_full_name = ver ? '${dep}@${ver}' : dep
+        if !progress.contains(dep) {
+          install(config, repo, dep_full_name, dep, ver, is_global, with_cache, progress, error)
+        }
+      }
+    }
+
     # run post install script if it exists
     if package_config.post_install {
       log.info('Running post install for ${full_name}')
@@ -99,19 +114,6 @@ def configure(config, repo, full_name, name, version, path, is_global, with_cach
 
       # return to current directory
       os.change_dir(this_dir)
-    }
-
-    if package_config.deps {
-      echo ''
-      log.info('Fetching dependencies for ${full_name}...')
-      echo '--------------------------${"-" * full_name.length()}---'
-
-      for dep, ver in package_config.deps {
-        var dep_full_name = ver ? '${dep}@${ver}' : dep
-        if !progress.contains(dep) {
-          install(config, repo, dep_full_name, dep, ver, is_global, with_cache, progress, error)
-        }
-      }
     }
   } else {
     error('${name} installation failed:\n  Failed to extract package source')

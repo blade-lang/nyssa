@@ -21,7 +21,15 @@ var doc_files = [
   'commands.md'
 ]
 
+var nyssa_version = '0.0.0'
 var docs_dir = os.join_paths(os.args[1], setup.DOCS_DIR)
+var config_file = os.join_paths(os.args[1], setup.CONFIG_FILE)
+if (config_file = file(config_file)) and config_file.exists() {
+  var conf = json.decode(config_file.read())
+  if is_dict(conf) {
+    nyssa_version = conf.get('version', '0.0.0')
+  }
+}
 
 def error_page(req, res) {
   res.write(template('404'))
@@ -35,6 +43,7 @@ def home(req, res) {
     top_packages: db.get_top_packages(),
     latest_packages: db.get_top_packages('created_at DESC'),
     show_login: !res.session.contains('user'),
+    nyssa_version: nyssa_version,
   }))
 }
 
