@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/blade-lang/nyssa/blob/master/LICENSE)
 [![Coverage Status](https://coveralls.io/repos/github/blade-lang/nyssa/badge.svg?branch=main)](https://coveralls.io/github/blade-lang/nyssa?branch=main)
-[![Version](https://img.shields.io/badge/version-1.0.0-green)](https://github.com/blade-lang/nyssa)
+[![Version](https://img.shields.io/badge/version-0.1.4-green)](https://github.com/blade-lang/nyssa)
 
 # Nyssa
 
