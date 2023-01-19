@@ -1,5 +1,13 @@
-# nyssa
-Nyssa is a friendly package manager and repository for the Blade programming language.
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/blade-lang/nyssa/blob/master/LICENSE)
+[![Coverage Status](https://coveralls.io/repos/github/blade-lang/nyssa/badge.svg?branch=main)](https://coveralls.io/github/blade-lang/nyssa?branch=main)
+[![Version](https://img.shields.io/badge/version-1.0.0-green)](https://github.com/blade-lang/nyssa)
+
+# Nyssa
+
+Nyssa is the official package manager for the Blade programming language. It is also a self-hostable repository server that allows you to easily manage and distribute packages for your Blade projects.
+
+![Nyssa CLI](https://raw.githubusercontent.com/blade-lang/nyssa/main/nyssa-cli.png)
+![Nyssa Repository](https://raw.githubusercontent.com/blade-lang/nyssa/main/nyssa.png)
 
 
 ## Features
@@ -35,44 +43,16 @@ Nyssa is a friendly package manager and repository for the Blade programming lan
 - Add the full path to `nyssa` to path (steps depend on operating system).
 
 
-## Commands
+## Documentation
 
-To get a list of commands available, their options and usage after installation, simply type `nyssa` in a terminal and press the ENTER key. You should see something similar to the following:
+To read the documentation, see the [Getting started](https://nyssa.bladelang.com/docs) guide on the website.
 
-```
-Usage: nyssa [ [-h] | [-v] ] [COMMAND]
 
-OPTIONS:
-  -h, --help                Show this help message and exit
-  -v, --version             Show Nyssa version
+## Contributing
 
-COMMANDS:
-  account <choice>          Manages a Nyssa publisher account
-    create                    creates a new publisher account
-    login                     login to a publisher account
-    logout                    log out of a publisher account
-    -r, --repo <value>        the repo where the account is located
-  clean                     Clear Nyssa storage
-    -c, --cache               clean packages cache
-    -l, --logs                clean logs
-    -a, --all                 clean everything
-  info                      Shows current project information
-  init                      Creates a new package in current directory
-    -n, --name <value>        the name of the package
-  install <value>           Installs a Blade package
-    -g, --global              installs the package globally
-    -c, --use-cache           enables the cache
-    -r, --repo <value>        the repository to install from
-  publish                   Publishes a repository
-    -r, --repo <value>        repository url
-  restore                   Restores all project dependencies
-    -x, --no-cache            disables the cache
-  serve                     Starts a local Nyssa repository server
-    -p, --port <value>        port of the server (default: 3000)
-    -n, --host <value>        the host ip (default: 127.0.0.1)
-  uninstall <value>         Uninstalls a Blade package
-    -g, --global              package is a global package
-```
+We welcome contributions from the community. Please see the [CONTRIBUTING.md](./CONTRIBUTING.md) file for more information on how you can help.
 
-_Nyssa_ will throw an error and hint you on proper usage when you use it wrong or pass invalid arguments to it.
 
+## License
+
+Nyssa is released under the [MIT license](./LICENSE).
