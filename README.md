@@ -6,7 +6,12 @@
 
 Nyssa is the official package manager for the Blade programming language. It is also a self-hostable repository server that allows you to easily manage and distribute packages for your Blade projects.
 
+#### The CLI
+
 ![Nyssa CLI](https://raw.githubusercontent.com/blade-lang/nyssa/main/nyssa-cli.png)
+
+#### The browsable repository website.
+
 ![Nyssa Repository](https://raw.githubusercontent.com/blade-lang/nyssa/main/nyssa.png)
 
 
