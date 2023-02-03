@@ -219,7 +219,7 @@ def get_all_packages_count() {
 }
 
 def get_packages_count() {
-  var res = db.fetch('SELECT COUNT(*) as count FROM packages GROUP BY name;')
+  var res = db.fetch('SELECT COUNT(DISTINCT name) as count FROM packages;')
   if res return res[0].count or 0
   return 0
 }
