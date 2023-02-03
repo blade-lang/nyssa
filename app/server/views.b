@@ -56,7 +56,7 @@ def search(req, res) {
 
   var query = req.queries.q
   var page = to_number(req.queries.get('page', '1'))
-  var sort = req.queries.get('sort', nil) ? req.queries.sort : 'downloads'
+  var sort = req.queries.get('sort', nil) ? req.queries.sort : 'download'
   var real_sort = sort == 'name' ? '${sort} ASC' : '${sort} DESC'
 
   var result = db.search_package('%${query}%', page, real_sort)

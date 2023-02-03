@@ -113,8 +113,8 @@ def get_packages() {
 }
 
 def get_top_packages(order) {
-  if !order order = 'downloads'
-  return db.fetch("SELECT id, name, publisher, description, replace(created_at, '-', '/') as date_created FROM packages WHERE deleted_at IS NULL GROUP BY name ORDER BY ${order} LIMIT 4;")
+  if !order order = 'download DESC'
+  return db.fetch("SELECT id, name, publisher, description, sum(downloads) as download, replace(created_at, '-', '/') as date_created FROM packages WHERE deleted_at IS NULL GROUP BY name ORDER BY ${order} LIMIT 4;")
 }
 
 def get_package(name, version) {
@@ -132,9 +132,9 @@ def get_package(name, version) {
 def get_package_for_view(name, version) {
   var res
   if !version {
-    res = db.fetch('SELECT * FROM packages WHERE name = ? ORDER BY id DESC LIMIT 1;', [name])
+    res = db.fetch('SELECT *, SUM(downloads) as download FROM packages WHERE name = ? ORDER BY id DESC LIMIT 1;', [name])
   } else {
-    res = db.fetch('SELECT * FROM packages WHERE name = ? and version = ? ORDER BY id DESC LIMIT 1;', [name, version])
+    res = db.fetch('SELECT *, downloads as download FROM packages WHERE name = ? and version = ? ORDER BY id DESC LIMIT 1;', [name, version])
   }
 
   if res return res[0]
