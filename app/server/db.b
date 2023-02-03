@@ -156,7 +156,7 @@ def search_package(query, page, order) {
   if !count count = 0
   else count = count[0].count
 
-  var result = db.fetch('SELECT * FROM (SELECT * FROM packages WHERE (name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query) AND deleted_at IS NULL ORDER BY id DESC) GROUP BY name ORDER BY ${order} LIMIT ${lower_limit}, ${per_page};', {':query': query})
+  var result = db.fetch('SELECT *, sum(downloads) as download FROM (SELECT * FROM packages WHERE (name LIKE :query OR description LIKE :query OR publisher LIKE :query OR tags LIKE :query) AND deleted_at IS NULL ORDER BY id DESC) GROUP BY name ORDER BY ${order} LIMIT ${lower_limit}, ${per_page};', {':query': query})
   var start = per_page * (page -1)
 
   return {
