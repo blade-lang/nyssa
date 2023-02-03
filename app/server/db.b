@@ -212,8 +212,14 @@ def update_package_download_count(name, version) {
   return db.exec('UPDATE packages SET downloads = downloads + 1 WHERE name = ? and version = ?;', [name, version])
 }
 
-def get_packages_count() {
+def get_all_packages_count() {
   var res = db.fetch('SELECT COUNT(*) as count FROM packages;')
+  if res return res[0].count or 0
+  return 0
+}
+
+def get_packages_count() {
+  var res = db.fetch('SELECT COUNT(*) as count FROM packages GROUP BY name;')
   if res return res[0].count or 0
   return 0
 }
