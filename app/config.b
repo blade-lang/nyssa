@@ -11,6 +11,7 @@ class Config {
   var deps = {}
   var post_install
   var pre_uninstall
+  var cli
 
   # list of default sources
   var sources = [
@@ -30,6 +31,7 @@ class Config {
     c.deps = dict.get('deps', {})
     c.post_install = dict.get('post_install', nil)
     c.pre_uninstall = dict.get('pre_uninstall', nil)
+    c.cli = dict.get('cli', nil)
 
     return c
   }
@@ -47,6 +49,7 @@ class Config {
       deps: self.deps,
       post_install: self.post_install,
       pre_uninstall: self.pre_uninstall,
+      cli: self.cli,
     }.compact()
   }
 }

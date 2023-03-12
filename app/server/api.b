@@ -80,6 +80,11 @@ def create_package(req, res) {
     if !name or !version or !config or !source
       return res.fail(status.BAD_REQUEST)
 
+    # disallow creating a package named blade to avoid cli destruction
+    # when doing a global installation.
+    if name.lower() == 'blade'
+      return res.fail(status.BAD_REQUEST)
+
     config = json.decode(config)
     # Verify config first
     if !is_dict(config) or !config.get('name', nil) or !config.get('version', nil)

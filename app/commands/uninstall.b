@@ -4,6 +4,7 @@ import json
 import ..setup
 import ..log
 import ..config { Config }
+import ..util { remove_cli }
 
 var blade_exe = os.args[0]
 var libs_dir = os.join_paths(os.cwd(), '.blade/libs')
@@ -67,6 +68,12 @@ def run(value, options, success, error) {
 
             # return to current directory
             os.change_dir(this_dir)
+          }
+
+          if package_config.cli {
+            # remove cli script
+            log.info('Removing CLI for ${value}...')
+            remove_cli(value, package_dir)
           }
         }
 

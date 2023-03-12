@@ -9,6 +9,7 @@ import zip
 import ..setup
 import ..log
 import ..config { Config }
+import ..util { setup_cli }
 
 
 var cache_dir = os.join_paths(os.args[1], setup.CACHE_DIR)
@@ -80,6 +81,13 @@ def configure(config, repo, full_name, name, version, path, progress, no_cache, 
 
       # return to current directory
       os.change_dir(this_dir)
+    }
+
+    # create cli if required
+    if package_config.cli {
+      var cli_path = os.join_paths(destination, package_config.cli)
+      log.info('Creating CLI for ${name} at ${cli_path}')
+      setup_cli(name, destination, cli_path)
     }
 
     return true
