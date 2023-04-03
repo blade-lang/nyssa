@@ -94,6 +94,7 @@ def view(req, res) {
     name = id_split[0]; version = id_split[1]
   }
   var package = db.get_package_for_view(name, version)
+  echo package
   if package {
     package.deps = json.decode(package.deps)
     package.tags = json.decode(package.tags)

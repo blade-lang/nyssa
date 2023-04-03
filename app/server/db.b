@@ -132,7 +132,10 @@ def get_package(name, version) {
 def get_package_for_view(name, version) {
   var res
   if !version {
-    res = db.fetch('SELECT *, SUM(downloads) as download FROM packages WHERE name = ? ORDER BY id DESC LIMIT 1;', [name])
+    res = db.fetch('SELECT * FROM packages WHERE name = ? ORDER BY id DESC LIMIT 1;', [name])
+    if res {
+      res[0].download = db.fetch('SELECT SUM(downloads) as downloads FROM packages WHERE name = ?', [name])[0].downloads
+    }
   } else {
     res = db.fetch('SELECT *, downloads as download FROM packages WHERE name = ? and version = ? ORDER BY id DESC LIMIT 1;', [name, version])
   }
