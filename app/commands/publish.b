@@ -4,6 +4,7 @@ import json
 import http
 import colors
 import zip
+import iters
 import ..setup
 import ..log
 import ..config { Config }
@@ -26,6 +27,36 @@ def parse(parser) {
       type: args.OPTIONAL,
     }
   )
+}
+
+def get_files(root) {
+  var result = []
+  if root {
+    for f in os.read_dir(root) {
+      if f != '.' and f != '..' {
+        var path = os.join_paths(root, f)
+        if os.dir_exists(path) {
+          result.extend(get_files(path))
+        } else {
+          result.append(path)
+        }
+      }
+    }
+  }
+  return result
+}
+
+def copy_to_tmp(root, dest) {
+  var files = iters.filter(get_files(root), |x| {
+    return x != '.' and x != '..' and 
+      !x.match('/(\\/|\\\\)[.]git\\1/')
+  })
+
+  for f in files {
+    var dir = os.join_paths(dest, os.dir_name(f).ltrim('.'))
+    if !os.dir_exists(dir) os.create_dir(dir)
+    file(f).copy(os.join_paths(dest, f.ltrim('.')))
+  }
 }
 
 def run(value, options, success, error) {
@@ -53,7 +84,14 @@ def run(value, options, success, error) {
     tmp_dest = os.join_paths(storage_dir, source_name)
 
     log.info('Packaging ${config.name}@${config.version}...')
-    if zip.compress(os.cwd(), tmp_dest) {
+
+    # make a backup that has no git.
+    var tmp_root = os.join_paths(storage_dir, '.tmp')
+    copy_to_tmp('.', tmp_root)
+
+    if zip.compress(tmp_root, tmp_dest) {
+      os.remove_dir(tmp_root, true)
+      echo 'Done...'
       var client = http.HttpClient()
 
       # set authentication headers
