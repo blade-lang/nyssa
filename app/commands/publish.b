@@ -88,10 +88,12 @@ def run(value, options, success, error) {
     # make a backup that has no git.
     var tmp_root = os.join_paths(storage_dir, '.tmp')
     copy_to_tmp('.', tmp_root)
+    var curr_dir = os.cwd()
+    os.change_dir(tmp_root)
 
-    if zip.compress(tmp_root, tmp_dest) {
+    if zip.compress(os.cwd(), tmp_dest) {
+      os.change_dir(curr_dir)
       os.remove_dir(tmp_root, true)
-      echo 'Done...'
       var client = http.HttpClient()
 
       # set authentication headers
