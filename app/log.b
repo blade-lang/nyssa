@@ -13,7 +13,7 @@ def init() {
   var time = date.localtime()
   _logfile = file(
     '${logs_dir}/${time.year}-${to_string(time.month).lpad(2,'0')}-${to_string(time.day).lpad(2,'0')}.log',
-    'w+'
+    'a+'
   )
 }
 init()
