@@ -43,8 +43,7 @@ def lex(state) {
         lexComment(state)
       } else {
         var tagName = lexTag(state)
-        var safeTag = tagName.lower()
-        if state.get('childlessTags', []).contains(safeTag.lower()) {
+        if state.get('childlessTags', []).contains(tagName.lower()) {
           lexSkipTag(tagName, state)
         }
       }

@@ -265,6 +265,7 @@ def template(name, variables) {
   var template_file = file(path)
   if template_file.exists() {
     var file_content = strip(template_file.read())
+    # return file_content
 
     return cocoa.encode(
       process(

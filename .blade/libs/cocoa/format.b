@@ -21,7 +21,7 @@ def format(nodes, options) {
     var type = node.type
     var outputNode = type == 'element' ? {
         type: type,
-        tagName: node.tagName.lower(),
+        tagName: node.tagName,
         attributes: formatAttributes(node.attributes),
         children: format(node.children, options),
       } : { 
